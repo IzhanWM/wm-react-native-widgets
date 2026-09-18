@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist/npm-packages/widgets",
+    "rootDir": "components",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["components/**/*.ts", "components/**/*.tsx"],
+  "exclude": ["**/wmx/**", "**/*.stories.*", "**/*.test.*", "**/*.spec.*"]
+}

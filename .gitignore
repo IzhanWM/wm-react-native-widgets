@@ -1,0 +1,45 @@
+# OSX
+.DS_Store
+._*
+
+# Node
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+logs
+*.log
+
+# Package manager
+yarn.lock
+pnpm-lock.yaml
+.yarn/*
+!.yarn/releases
+
+# Build output
+dist/
+storybook-static/
+*.tsbuildinfo
+coverage/
+.nyc_output
+
+# Local linking
+.yalc/
+yalc.lock
+
+# Editors
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env*.local
+
+# Tooling caches
+.expo/
+.metro-health-check*
+.playwright-mcp
