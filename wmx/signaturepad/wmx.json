@@ -1,0 +1,102 @@
+{
+  "name": "WMUISignaturePad",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-signature-pad--default",
+  "displayName": "Signature Pad",
+  "description": "Freehand signature capture. The user draws with a finger or pointer; each stroke hands back a base64 PNG the page can upload. On iOS and Android this draws through a WebView canvas; web has no WebView, so it ships a separate pointer-and-vector implementation that returns the same base64 PNG. Stroke width varies with speed on device and is fixed on web.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "react-native-svg": "15.12.1"
+  },
+  "keywords": [
+    "signature",
+    "sign",
+    "draw",
+    "handwriting",
+    "consent",
+    "approval",
+    "canvas",
+    "capture",
+    "ui-widgets/signaturepad"
+  ],
+  "props": {
+    "penColor": {
+      "name": "penColor",
+      "displayName": "Pen Color",
+      "description": "Stroke color of the drawn signature. Default: #1D1B20",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#1D1B20",
+      "isList": false,
+      "isRequired": false
+    },
+    "backgroundColor": {
+      "name": "backgroundColor",
+      "displayName": "Background Color",
+      "description": "Background color of the signature canvas, and of the exported PNG. Default: #FFFFFF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#FFFFFF",
+      "isList": false,
+      "isRequired": false
+    },
+    "minWidth": {
+      "name": "minWidth",
+      "displayName": "Min Width",
+      "description": "Thinnest stroke width, used at speed. On web the min and max are averaged into one fixed width. Default: 2",
+      "type": "number",
+      "defaultValue": 2,
+      "isList": false,
+      "isRequired": false
+    },
+    "maxWidth": {
+      "name": "maxWidth",
+      "displayName": "Max Width",
+      "description": "Thickest stroke width, used when the pointer moves slowly. Default: 4",
+      "type": "number",
+      "defaultValue": 4,
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onSignatureEnd": {
+      "name": "onSignatureEnd",
+      "displayName": "On Signature End",
+      "description": "Fires each time the user lifts their finger after a stroke, with the signature as a base64 PNG data URI and the running stroke count.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onClear": {
+      "name": "onClear",
+      "displayName": "On Clear",
+      "description": "Fires after the signature canvas is cleared.",
+      "type": "function",
+      "params": [],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/signaturepad",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/empty-pad.png",
+      "/assets/images/signed.png",
+      "/assets/images/exported-png.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-signature-pad--default"
+  },
+  "webSupport": true
+}

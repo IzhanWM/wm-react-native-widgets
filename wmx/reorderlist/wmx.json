@@ -1,0 +1,141 @@
+{
+  "name": "WMUIReorderList",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-reorder-list--default",
+  "displayName": "Reorder List",
+  "description": "Drag-to-reorder list. Long-press a row to lift it, drag to a new position, and the reordered list is handed back to the page. The underlying library is pure JavaScript over Reanimated and Gesture Handler, so it also runs on web; upstream tests iOS and Android only, so keep a non-drag path for web users.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "react-native-gesture-handler": "2.28.0",
+    "react-native-reanimated": "4.1.1"
+  },
+  "keywords": [
+    "reorder",
+    "sortable",
+    "drag",
+    "drop",
+    "list",
+    "dnd",
+    "rank",
+    "priority",
+    "ui-widgets/reorderlist"
+  ],
+  "props": {
+    "dataset": {
+      "name": "dataset",
+      "displayName": "Data",
+      "description": "Rows to render, each with a label field. Example: [{id: 1, label: 'First'}, {id: 2, label: 'Second'}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "labelField": {
+      "name": "labelField",
+      "displayName": "Label Field",
+      "description": "Row field shown as the row label. Default: label",
+      "type": "string",
+      "defaultValue": "label",
+      "isList": false,
+      "isRequired": false
+    },
+    "itemHeight": {
+      "name": "itemHeight",
+      "displayName": "Item Height",
+      "description": "Fixed row height in pixels. Default: 56",
+      "type": "number",
+      "defaultValue": 56,
+      "isList": false,
+      "isRequired": false
+    },
+    "rowColor": {
+      "name": "rowColor",
+      "displayName": "Row Color",
+      "description": "Row background color. Default: #FFFFFF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#FFFFFF",
+      "isList": false,
+      "isRequired": false
+    },
+    "draggingRowColor": {
+      "name": "draggingRowColor",
+      "displayName": "Dragging Row Color",
+      "description": "Row background while the row is lifted for dragging. Default: #EEF2FF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#EEF2FF",
+      "isList": false,
+      "isRequired": false
+    },
+    "labelColor": {
+      "name": "labelColor",
+      "displayName": "Label Color",
+      "description": "Color of the row label text. Default: #111827",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#111827",
+      "isList": false,
+      "isRequired": false
+    },
+    "showSeparator": {
+      "name": "showSeparator",
+      "displayName": "Show Separator",
+      "description": "Whether to draw a hairline separator under each row. Default: true",
+      "type": "boolean",
+      "defaultValue": true,
+      "isList": false,
+      "isRequired": false
+    },
+    "enabled": {
+      "name": "enabled",
+      "displayName": "Enabled",
+      "description": "Whether dragging is accepted. Set false for a read-only list. Default: true",
+      "type": "boolean",
+      "defaultValue": true,
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onReorder": {
+      "name": "onReorder",
+      "displayName": "On Reorder",
+      "description": "Fires after a drag completes, with the list in its new order plus the from and to indexes.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onItemPress": {
+      "name": "onItemPress",
+      "displayName": "On Item Press",
+      "description": "Fires with the row that was tapped rather than dragged.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/reorderlist",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/rows.png",
+      "/assets/images/dragging.png",
+      "/assets/images/reordered.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-reorder-list--default"
+  },
+  "webSupport": true
+}

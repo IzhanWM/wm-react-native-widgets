@@ -1,0 +1,115 @@
+{
+  "name": "WMUISkiaEffect",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-skia-effect--default",
+  "displayName": "Skia Effect",
+  "description": "Per-pixel canvas for blend modes and blur that vector drawing cannot reach. On iOS and Android it paints through Skia. Skia on web needs the CanvasKit WASM bundle loaded by the host app, which not every host does, so web renders the same composition with CSS filter and mix-blend-mode instead and pulls in no WASM.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "@shopify/react-native-skia": "2.6.2"
+  },
+  "keywords": [
+    "skia",
+    "blur",
+    "blend",
+    "effect",
+    "canvas",
+    "glow",
+    "gradient",
+    "decorative",
+    "ui-widgets/skiaeffect"
+  ],
+  "props": {
+    "dataset": {
+      "name": "dataset",
+      "displayName": "Data",
+      "description": "Blobs to draw. Each row may carry a color and a radius given as a 0-1 fraction of size. Example: [{color: '#2563EB', radius: 0.35}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "size": {
+      "name": "size",
+      "displayName": "Size",
+      "description": "Canvas edge length in pixels. Default: 200",
+      "type": "number",
+      "defaultValue": 200,
+      "isList": false,
+      "isRequired": false
+    },
+    "blurAmount": {
+      "name": "blurAmount",
+      "displayName": "Blur Amount",
+      "description": "Gaussian blur radius applied to the blobs, in pixels. Default: 24",
+      "type": "number",
+      "defaultValue": 24,
+      "isList": false,
+      "isRequired": false
+    },
+    "blendMode": {
+      "name": "blendMode",
+      "displayName": "Blend Mode",
+      "description": "Compositing mode used between blobs. screen gives the classic additive lava-lamp look. Default: screen",
+      "type": "string",
+      "widget": "list",
+      "options": [
+        "normal",
+        "multiply",
+        "screen",
+        "overlay",
+        "darken",
+        "lighten",
+        "color-dodge",
+        "color-burn",
+        "hard-light",
+        "soft-light",
+        "difference",
+        "exclusion",
+        "hue",
+        "saturation",
+        "color",
+        "luminosity"
+      ],
+      "defaultValue": "screen",
+      "isList": false,
+      "isRequired": false
+    },
+    "spread": {
+      "name": "spread",
+      "displayName": "Spread",
+      "description": "Distance of each blob from the center, as a fraction of size. Default: 0.18",
+      "type": "number",
+      "defaultValue": 0.18,
+      "isList": false,
+      "isRequired": false
+    },
+    "backgroundColor": {
+      "name": "backgroundColor",
+      "displayName": "Background Color",
+      "description": "Background painted behind the blobs. Transparent by default so the effect composites onto whatever sits below. Default: transparent",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "transparent",
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/skiaeffect",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/screen-blend.png",
+      "/assets/images/sunset-blur.png",
+      "/assets/images/no-blur.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-skia-effect--default"
+  },
+  "webSupport": true
+}

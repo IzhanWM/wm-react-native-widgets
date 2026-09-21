@@ -1,0 +1,185 @@
+{
+  "name": "WMUISwipeDeck",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-swipe-deck--default",
+  "displayName": "Swipe Deck",
+  "description": "Card deck with pan physics and a stacked rest state. Drag the top card past the threshold to accept or reject it. Built directly on Gesture Handler and Reanimated, both of which support web, so the deck runs on iOS, Android and web. The page must sit inside a GestureHandlerRootView.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "react-native-gesture-handler": "2.28.0",
+    "react-native-reanimated": "4.1.1"
+  },
+  "keywords": [
+    "swipe",
+    "deck",
+    "cards",
+    "tinder",
+    "gesture",
+    "pan",
+    "stack",
+    "accept",
+    "reject",
+    "ui-widgets/swipedeck"
+  ],
+  "props": {
+    "dataset": {
+      "name": "dataset",
+      "displayName": "Data",
+      "description": "Cards to render. Each row may carry a title, a subtitle and an image URL. Example: [{title: 'Ada Lovelace', subtitle: 'Mathematician', image: '...'}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "titleField": {
+      "name": "titleField",
+      "displayName": "Title Field",
+      "description": "Row field shown as the card title. Default: title",
+      "type": "string",
+      "defaultValue": "title",
+      "isList": false,
+      "isRequired": false
+    },
+    "subtitleField": {
+      "name": "subtitleField",
+      "displayName": "Subtitle Field",
+      "description": "Row field shown under the title. Default: subtitle",
+      "type": "string",
+      "defaultValue": "subtitle",
+      "isList": false,
+      "isRequired": false
+    },
+    "imageField": {
+      "name": "imageField",
+      "displayName": "Image Field",
+      "description": "Row field holding the card image URL. Default: image",
+      "type": "string",
+      "defaultValue": "image",
+      "isList": false,
+      "isRequired": false
+    },
+    "imageHeight": {
+      "name": "imageHeight",
+      "displayName": "Image Height",
+      "description": "Height in pixels of the image band at the top of each card. Default: 180",
+      "type": "number",
+      "defaultValue": 180,
+      "isList": false,
+      "isRequired": false
+    },
+    "cardWidth": {
+      "name": "cardWidth",
+      "displayName": "Card Width",
+      "description": "Card width in pixels. Default: 300",
+      "type": "number",
+      "defaultValue": 300,
+      "isList": false,
+      "isRequired": false
+    },
+    "cardHeight": {
+      "name": "cardHeight",
+      "displayName": "Card Height",
+      "description": "Card height in pixels. Default: 380",
+      "type": "number",
+      "defaultValue": 380,
+      "isList": false,
+      "isRequired": false
+    },
+    "stackOffset": {
+      "name": "stackOffset",
+      "displayName": "Stack Offset",
+      "description": "Pixels each card behind the top one is offset by, producing the stack. Default: 12",
+      "type": "number",
+      "defaultValue": 12,
+      "isList": false,
+      "isRequired": false
+    },
+    "stackDepth": {
+      "name": "stackDepth",
+      "displayName": "Stack Depth",
+      "description": "How many cards are drawn behind the top card. Default: 2",
+      "type": "number",
+      "defaultValue": 2,
+      "isList": false,
+      "isRequired": false
+    },
+    "swipeThreshold": {
+      "name": "swipeThreshold",
+      "displayName": "Swipe Threshold",
+      "description": "Horizontal drag distance in pixels that commits a swipe. Below it the card springs back. Default: 120",
+      "type": "number",
+      "defaultValue": 120,
+      "isList": false,
+      "isRequired": false
+    },
+    "cardColor": {
+      "name": "cardColor",
+      "displayName": "Card Color",
+      "description": "Card background color. Default: #FFFFFF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#FFFFFF",
+      "isList": false,
+      "isRequired": false
+    },
+    "enabled": {
+      "name": "enabled",
+      "displayName": "Enabled",
+      "description": "Whether dragging is accepted. Set false to freeze the deck. Default: true",
+      "type": "boolean",
+      "defaultValue": true,
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onSwipeRight": {
+      "name": "onSwipeRight",
+      "displayName": "On Swipe Right",
+      "description": "Fires with the card swiped right, the accept gesture.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onSwipeLeft": {
+      "name": "onSwipeLeft",
+      "displayName": "On Swipe Left",
+      "description": "Fires with the card swiped left, the reject gesture.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onDeckEmpty": {
+      "name": "onDeckEmpty",
+      "displayName": "On Deck Empty",
+      "description": "Fires once, after the last card leaves the deck.",
+      "type": "function",
+      "params": [],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/swipedeck",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/deck.png",
+      "/assets/images/dragging.png",
+      "/assets/images/after-swipe.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-swipe-deck--default"
+  },
+  "webSupport": true
+}

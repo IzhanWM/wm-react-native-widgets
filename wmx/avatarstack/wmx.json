@@ -1,0 +1,135 @@
+{
+  "name": "WMUIAvatarStack",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-avatar-stack--default",
+  "displayName": "Avatar Stack",
+  "description": "Overlapping circular avatars with per-avatar status dots and a +N overflow bubble. Built from plain views and negative margins, so it needs no drawing library and runs everywhere.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0"
+  },
+  "keywords": [
+    "avatar",
+    "avatars",
+    "stack",
+    "group",
+    "members",
+    "presence",
+    "team",
+    "facepile",
+    "ui-widgets/avatarstack"
+  ],
+  "props": {
+    "dataset": {
+      "name": "dataset",
+      "displayName": "Data",
+      "description": "Members to render. Each row may carry a name, an imageUrl and a status. Example: [{name: 'Ada', imageUrl: '...', status: 'online'}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "maxVisible": {
+      "name": "maxVisible",
+      "displayName": "Max Visible",
+      "description": "How many avatars render before the rest collapse into a +N bubble. The overflow count comes from the data. Default: 4",
+      "type": "number",
+      "defaultValue": 4,
+      "isList": false,
+      "isRequired": false
+    },
+    "avatarSize": {
+      "name": "avatarSize",
+      "displayName": "Avatar Size",
+      "description": "Avatar diameter in pixels. The status dot and initials scale with it. Default: 44",
+      "type": "number",
+      "defaultValue": 44,
+      "isList": false,
+      "isRequired": false
+    },
+    "overlap": {
+      "name": "overlap",
+      "displayName": "Overlap",
+      "description": "Pixels each avatar overlaps the one before it. Default: 14",
+      "type": "number",
+      "defaultValue": 14,
+      "isList": false,
+      "isRequired": false
+    },
+    "borderColor": {
+      "name": "borderColor",
+      "displayName": "Border Color",
+      "description": "Ring drawn around each avatar so overlapping edges stay separated. Default: #FFFFFF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#FFFFFF",
+      "isList": false,
+      "isRequired": false
+    },
+    "nameField": {
+      "name": "nameField",
+      "displayName": "Name Field",
+      "description": "Row field holding the display name. Its first letter is the initials fallback. Default: name",
+      "type": "string",
+      "defaultValue": "name",
+      "isList": false,
+      "isRequired": false
+    },
+    "imageField": {
+      "name": "imageField",
+      "displayName": "Image Field",
+      "description": "Row field holding the avatar image URL. Default: imageUrl",
+      "type": "string",
+      "defaultValue": "imageUrl",
+      "isList": false,
+      "isRequired": false
+    },
+    "statusField": {
+      "name": "statusField",
+      "displayName": "Status Field",
+      "description": "Row field holding the presence state: online, away or offline. Default: status",
+      "type": "string",
+      "defaultValue": "status",
+      "isList": false,
+      "isRequired": false
+    },
+    "showStatus": {
+      "name": "showStatus",
+      "displayName": "Show Status",
+      "description": "Whether to draw the presence dot on each avatar. Default: true",
+      "type": "boolean",
+      "defaultValue": true,
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onMemberSelect": {
+      "name": "onMemberSelect",
+      "displayName": "On Member Select",
+      "description": "Fires with the member whose avatar was tapped. The overflow bubble is not tappable.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/avatarstack",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/default.png",
+      "/assets/images/large-overlap.png",
+      "/assets/images/initials-fallback.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-avatar-stack--default"
+  },
+  "webSupport": true
+}

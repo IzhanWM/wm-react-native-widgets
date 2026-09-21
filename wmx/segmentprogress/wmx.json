@@ -1,0 +1,135 @@
+{
+  "name": "WMUISegmentProgress",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-segment-progress--default",
+  "displayName": "Segment Progress",
+  "description": "Multi-segment progress bar where every segment keeps its own rounded caps. Stacked views cannot produce per-segment caps, so the bar is drawn as vectors and renders identically on iOS, Android and web.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "react-native-svg": "15.12.1"
+  },
+  "keywords": [
+    "progress",
+    "segment",
+    "bar",
+    "stacked",
+    "meter",
+    "breakdown",
+    "capacity",
+    "svg",
+    "ui-widgets/segmentprogress"
+  ],
+  "props": {
+    "dataset": {
+      "name": "dataset",
+      "displayName": "Data",
+      "description": "Segments to render. Each row may carry a value, a color and a label. Example: [{label: 'Used', value: 40, color: '#2563EB'}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "valueField": {
+      "name": "valueField",
+      "displayName": "Value Field",
+      "description": "Row field holding each segment's numeric value. Default: value",
+      "type": "string",
+      "defaultValue": "value",
+      "isList": false,
+      "isRequired": false
+    },
+    "colorField": {
+      "name": "colorField",
+      "displayName": "Color Field",
+      "description": "Row field holding a per-segment color. Rows without one fall back to the palette. Default: color",
+      "type": "string",
+      "defaultValue": "color",
+      "isList": false,
+      "isRequired": false
+    },
+    "total": {
+      "name": "total",
+      "displayName": "Total",
+      "description": "Denominator for the bar. 0 sums the segments so the bar always fills; set a fixed total to show remaining capacity. Default: 0",
+      "type": "number",
+      "defaultValue": 0,
+      "isList": false,
+      "isRequired": false
+    },
+    "barHeight": {
+      "name": "barHeight",
+      "displayName": "Bar Height",
+      "description": "Bar thickness in pixels. Default: 12",
+      "type": "number",
+      "defaultValue": 12,
+      "isList": false,
+      "isRequired": false
+    },
+    "gap": {
+      "name": "gap",
+      "displayName": "Gap",
+      "description": "Separator width in pixels between adjacent segments. Default: 2",
+      "type": "number",
+      "defaultValue": 2,
+      "isList": false,
+      "isRequired": false
+    },
+    "cornerRadius": {
+      "name": "cornerRadius",
+      "displayName": "Corner Radius",
+      "description": "Corner radius applied to each segment's caps. Default: 6",
+      "type": "number",
+      "defaultValue": 6,
+      "isList": false,
+      "isRequired": false
+    },
+    "trackColor": {
+      "name": "trackColor",
+      "displayName": "Track Color",
+      "description": "Color of the unfilled track behind the segments. Default: #E5E7EB",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#E5E7EB",
+      "isList": false,
+      "isRequired": false
+    },
+    "colors": {
+      "name": "colors",
+      "displayName": "Colors",
+      "description": "Palette cycled through for rows that carry no color. Example: ['#2563EB', '#10B981', '#F59E0B']",
+      "type": "string",
+      "isList": true,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onSegmentSelect": {
+      "name": "onSegmentSelect",
+      "displayName": "On Segment Select",
+      "description": "Fires with the segment that was tapped, along with its value and share of the bar.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/segmentprogress",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/summed-total.png",
+      "/assets/images/fixed-total.png",
+      "/assets/images/wide-gaps.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-segment-progress--default"
+  },
+  "webSupport": true
+}

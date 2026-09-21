@@ -1,0 +1,125 @@
+{
+  "name": "WMUIQrCode",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-qr-code--default",
+  "displayName": "QR Code",
+  "description": "Generates a QR code from any string, with an optional centered logo. Drawn as vectors, so it stays crisp at any size and renders identically on iOS, Android and web.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "react-native-svg": "15.12.1"
+  },
+  "keywords": [
+    "qrcode",
+    "qr",
+    "barcode",
+    "scan",
+    "encode",
+    "link",
+    "svg",
+    "ui-widgets/qrcode"
+  ],
+  "props": {
+    "value": {
+      "name": "value",
+      "displayName": "Value",
+      "description": "Text or URL to encode. Example: 'https://www.wavemaker.com'",
+      "type": "string",
+      "defaultValue": "https://www.wavemaker.com",
+      "isList": false,
+      "isRequired": true
+    },
+    "size": {
+      "name": "size",
+      "displayName": "Size",
+      "description": "Edge length of the rendered symbol in pixels. Default: 160",
+      "type": "number",
+      "defaultValue": 160,
+      "isList": false,
+      "isRequired": false
+    },
+    "color": {
+      "name": "color",
+      "displayName": "Color",
+      "description": "Color of the QR modules (the dark squares). Default: #000000",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#000000",
+      "isList": false,
+      "isRequired": false
+    },
+    "backgroundColor": {
+      "name": "backgroundColor",
+      "displayName": "Background Color",
+      "description": "Background drawn behind the symbol. Default: #FFFFFF",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#FFFFFF",
+      "isList": false,
+      "isRequired": false
+    },
+    "logoUrl": {
+      "name": "logoUrl",
+      "displayName": "Logo URL",
+      "description": "Optional logo image drawn at the center. Pair it with error correction Q or H so the code still scans.",
+      "type": "string",
+      "isList": false,
+      "isRequired": false
+    },
+    "logoSize": {
+      "name": "logoSize",
+      "displayName": "Logo Size",
+      "description": "Logo edge length in pixels. Default: 40",
+      "type": "number",
+      "defaultValue": 40,
+      "isList": false,
+      "isRequired": false
+    },
+    "errorCorrection": {
+      "name": "errorCorrection",
+      "displayName": "Error Correction",
+      "description": "Error correction level. L tolerates the least damage and encodes the most data; H tolerates the most. Default: M",
+      "type": "string",
+      "widget": "list",
+      "options": [
+        "L",
+        "M",
+        "Q",
+        "H"
+      ],
+      "defaultValue": "M",
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onError": {
+      "name": "onError",
+      "displayName": "On Error",
+      "description": "Fires when the value cannot be encoded, for example when it is too long for the chosen error correction level.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/qrcode",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/default.png",
+      "/assets/images/branded-colors.png",
+      "/assets/images/plain-text.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-qr-code--default"
+  },
+  "webSupport": true
+}
