@@ -66,8 +66,8 @@ documented in `wmx/<widget>/wmx.json` and their `.props.ts` JSDoc.
 ## Native verification
 
 There is no demo app in this repo. To exercise the native code paths of
-`SignaturePad`, `SkiaEffect`, `SwipeDeck` and `ReorderList`, link the built
-package into an Expo app:
+`SignaturePad`, `SkiaEffect`, `SwipeDeck` and `ReorderList` — and `Maps`, which
+runs on device only — link the built package into an Expo app:
 
 ```bash
 npm install -g yalc
@@ -76,6 +76,13 @@ cd /path/to/your-expo-app
 yalc add @wavemaker/react-native-widgets
 npx expo start
 ```
+
+`Maps` additionally needs `expo-maps` and `expo-image` installed in that app
+(`npx expo install expo-maps expo-image`), the `expo-maps` config plugin, and a
+Google Maps API key on Android — so it needs a development build, not Expo Go.
+`showsUserLocation` asks for the permission through `expo-maps`, which the
+Android map crashes without, so the plugin needs
+`requestLocationPermission: true`.
 
 Rerun `npm run generate:package` after library changes. If the app does not pick
 them up after a reload, restart with `npx expo start -c`.

@@ -1,8 +1,8 @@
 # Getting started
 
-`@wavemaker/react-native-widgets` is a set of seven standalone React Native UI
-widgets. Every one of them runs on **iOS, Android and web** from the same
-import — nothing in your page branches on platform.
+`@wavemaker/react-native-widgets` is a set of eight standalone React Native UI
+widgets. Seven of them run on **iOS, Android and web** from the same code —
+nothing in your page branches on platform. **Maps** is native only.
 
 ## Install
 
@@ -11,14 +11,9 @@ npm install @wavemaker/react-native-widgets
 npm install react-native-svg react-native-gesture-handler react-native-reanimated
 ```
 
-Two peers are optional and only needed by one widget each:
-
-```bash
-npm install @shopify/react-native-skia   # SkiaEffect
-npm install react-native-webview         # SignaturePad, native only
-```
-
 ## Use a widget
+
+Five widgets come off the package root:
 
 ```tsx
 import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-widgets';
@@ -28,12 +23,24 @@ import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-wi
 <SegmentProgress dataset={segments} total={128} />
 ```
 
-Each widget is also importable on its own subpath, if you would rather not pull
-the barrel in:
+The other three each pull a peer of their own, so they live on their own subpath
+and stay out of any bundle that did not ask for them — Metro does not tree-shake,
+so a root import would drag their peers in for everyone:
+
+| Widget | Import from | Also install |
+| --- | --- | --- |
+| SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
+| SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
+| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install expo-maps expo-image` — native only |
+
+Every widget is importable on its own subpath, not just those three:
 
 ```tsx
 import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 ```
+
+Maps also needs the `expo-maps` config plugin and an Android Google Maps API key
+in the host app. Its props, events and per-platform behaviour are in
 
 ## Binding data
 

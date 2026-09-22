@@ -1,9 +1,9 @@
 # UI widgets — platform support
 
-Every widget in `@wavemaker/react-native-widgets` renders on **iOS, Android and web**. Getting
-there took a different strategy per widget, because the underlying libraries do
-not all reach web. This page records which strategy each one uses and what,
-if anything, differs on web.
+Every widget in `@wavemaker/react-native-widgets` except **Maps** renders on
+**iOS, Android and web**. Getting there took a different strategy per widget,
+because the underlying libraries do not all reach web. This page records which
+strategy each one uses and what, if anything, differs on web.
 
 ## Support matrix
 
@@ -16,6 +16,19 @@ if anything, differs on web.
 | **Reorder List** | `react-native-reorderable-list` | ✅ | ⚠️ | Works on web; not shown in this repo's Storybook. See the caveat below. |
 | **Signature Pad** | WebView canvas (native) | ✅ | ✅ | **Separate web implementation.** |
 | **Skia Effect** | `@shopify/react-native-skia` | ✅ | ✅ | **Separate web implementation.** |
+| **Maps** | `expo-maps` → Google Maps / Apple Maps | ✅ | ❌ | Native only. Web resolves to an empty box. |
+
+## Why Maps stops at native
+
+`expo-maps` is a thin wrapper over the Google Maps SDK on Android and MapKit on
+iOS. It has no web build at all, so importing it on web breaks the bundle — and
+unlike the two widgets below, there is nothing to reimplement it with: a browser
+map means a second library, a different API and a key of its own.
+
+`maps.web.tsx` therefore renders the widget's box, sized by the same `height`
+rules as the native file, and nothing inside it. A universal page keeps building
+and keeps its layout; the map appears on device. The WMX manifest declares
+`webSupport: false`, so Studio does not offer it in web preview.
 
 ## Why two widgets needed a second implementation
 

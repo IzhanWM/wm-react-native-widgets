@@ -1,12 +1,10 @@
 # @wavemaker/react-native-widgets
 
-Seven standalone React Native UI widgets — QR code, avatar stack, segment
-progress, swipe deck, reorder list, signature pad and Skia effects — that render
-on **iOS, Android and web** from one import.
+React Native UI widgets — QR code, avatar stack, segment
+progress, swipe deck, reorder list, signature pad, maps and Skia effects. Seven
+render on **iOS, Android and web** from the same code; **Maps** is native only.
 
 - **Live Storybook:** https://wavemaker.github.io/wm-react-native-widgets
-- **Charts:** the ECharts-based chart components live in a separate repo,
-  [`wm-react-native-echarts`](https://github.com/wavemaker/wm-react-native-echarts).
 
 ---
 
@@ -17,12 +15,7 @@ npm install @wavemaker/react-native-widgets
 npm install react-native-svg react-native-gesture-handler react-native-reanimated
 ```
 
-Two peers are optional, each needed by exactly one widget:
-
-```bash
-npm install @shopify/react-native-skia   # SkiaEffect
-npm install react-native-webview         # SignaturePad, native only
-```
+Five widgets come off the package root:
 
 ```tsx
 import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-widgets';
@@ -32,15 +25,72 @@ import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-wi
 <SegmentProgress dataset={segments} total={128} />
 ```
 
-Widgets are also importable one at a time:
+The other three each pull a peer of their own, so they are reached on their own
+subpath and never enter a bundle that did not ask for them:
+
+| Widget | Import from | Also install |
+| --- | --- | --- |
+| SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
+| SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
+| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install expo-maps expo-image` — native only |
+
+Metro does not tree-shake, so importing anything from the root pulls in every
+widget the root re-exports. Keeping these three off it is what makes their peers
+genuinely optional — install one only if you import the widget that needs it.
+
+Every widget is importable on its own subpath, not just those three:
 
 ```tsx
 import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 ```
 
+Maps needs host-app setup of its own — the `expo-maps` config plugin and an Android Google Maps API key.
 ---
 
 ## The widgets
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/qrcode/assets/images/thumbnail.png" width="420" alt="QR Code widget rendering a vector QR symbol" /><br />
+      <b>QR Code</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/avatarstack/assets/images/thumbnail.png" width="420" alt="Avatar Stack widget with overlapping avatars and a +N overflow badge" /><br />
+      <b>Avatar Stack</b>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/segmentprogress/assets/images/thumbnail.png" width="420" alt="Segment Progress widget showing a multi-segment bar" /><br />
+      <b>Segment Progress</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/swipedeck/assets/images/thumbnail.png" width="420" alt="Swipe Deck widget showing a stack of swipeable cards" /><br />
+      <b>Swipe Deck</b>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/reorderlist/assets/images/thumbnail.png" width="420" alt="Reorder List widget with a row lifted mid-drag" /><br />
+      <b>Reorder List</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/signaturepad/assets/images/thumbnail.png" width="420" alt="Signature Pad widget with a freehand signature captured on the canvas" /><br />
+      <b>Signature Pad</b>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/skiaeffect/assets/images/thumbnail.png" width="420" alt="Skia Effect widget showing a blurred, blended color canvas" /><br />
+      <b>Skia Effect</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/markers.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
+      <b>Maps</b> — native only
+    </td>
+  </tr>
+</table>
 
 | Widget | Description | iOS / Android | Web |
 | --- | --- | :---: | :---: |
@@ -51,6 +101,7 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 | **Reorder List** | Long-press and drag rows into a new order | ✅ | ⚠️ |
 | **Signature Pad** | Freehand capture exported as a base64 PNG | ✅ | ✅ |
 | **Skia Effect** | Blend modes and blur through a per-pixel canvas | ✅ | ✅ |
+| **Maps** | Google/Apple map with pins, routes and user location | ✅ | ❌ |
 
 Two widgets could not reach web through their native library, so each ships a
 **separate web implementation** behind the same public contract — selected by
@@ -65,6 +116,10 @@ bundle:
   bundle first. The web build reproduces the composition with CSS `filter` and
   `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode`, and
   pulls in no WASM.
+
+❌ **Maps is native only**: `expo-maps` ships no web build, so the widget resolves
+to a web file that reserves the same box and renders nothing. A universal page
+still builds; the map appears on iOS and Android only.
 
 ⚠️ **Reorder List on web**: `react-native-reorderable-list` declares no native
 modules, so it runs on web and drag works — but upstream tests iOS and Android
@@ -150,8 +205,8 @@ running Expo web build — see the header of `scripts/generate-widget-images.js`
 ## Maintainers
 
 Maintained by [WaveMaker](https://www.wavemaker.com/). Source:
-[wavemaker/wm-react-native-widgets](https://github.com/wavemaker/wm-react-native-widgets).
-Use [GitHub Issues](https://github.com/wavemaker/wm-react-native-widgets/issues)
+[wavemaker/wm-react-native-widgets](https://github.com/IzhanWM/wm-react-native-widgets).
+Use [GitHub Issues](https://github.com/IzhanWM/wm-react-native-widgets/issues)
 for bug reports and feature requests.
 
 ---

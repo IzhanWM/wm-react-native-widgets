@@ -1,10 +1,7 @@
 # 01 — Overview
 
 `@wavemaker/react-native-widgets` is a library of seven standalone React Native
-UI widgets that render on **iOS, Android and web**. It carries no charting code:
-the ECharts-based charts live in
-[`wm-react-native-echarts`](https://github.com/wavemaker/wm-react-native-echarts),
-and the two repos share no source.
+UI widgets that render on **iOS, Android and web**. 
 
 Each widget is published as a flat subpath of one package
 (`@wavemaker/react-native-widgets/qrcode`, `.../avatarstack`, …) and re-exported
@@ -28,10 +25,10 @@ Shipped as **runtime dependencies** of the published package:
 `react-native-signature-canvas`.
 
 Left to the host app as **peers**: `react`, `react-native`, `react-native-svg`,
-`react-native-gesture-handler`, `react-native-reanimated`, plus two marked
-**optional** because one widget each needs them —
-`@shopify/react-native-skia` (`SkiaEffect`) and `react-native-webview`
-(native `SignaturePad`).
+`react-native-gesture-handler`, `react-native-reanimated`, plus the ones marked
+**optional** because a single widget needs them —
+`@shopify/react-native-skia` (`SkiaEffect`), `react-native-webview`
+(native `SignaturePad`), and `expo` + `expo-maps` + `expo-image` (`Maps`).
 
 ## Directory map
 

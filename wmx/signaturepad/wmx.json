@@ -12,7 +12,8 @@
   "iconUrl": "icon.svg",
   "dependencies": {
     "@wavemaker/react-native-widgets": "1.0.0",
-    "react-native-svg": "15.12.1"
+    "react-native-svg": "15.12.1",
+    "react-native-webview": "13.16.0"
   },
   "keywords": [
     "signature",

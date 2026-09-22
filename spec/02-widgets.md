@@ -9,6 +9,7 @@
 | `ReorderList` | `reorderlist/` | `react-native-reorderable-list` |
 | `SignaturePad` | `signaturepad/` | WebView canvas (native) / SVG + canvas (web) |
 | `SkiaEffect` | `skiaeffect/` | `@shopify/react-native-skia` / CSS (web) |
+| `Maps` | `maps/` | `expo-maps` — Google Maps (Android) / Apple Maps (iOS), `expo-image` for marker icons |
 
 ## Folder convention
 
@@ -41,15 +42,16 @@ widget funnels its `dataset` prop through it.
 
 ## Platform strategy
 
-Five widgets are one implementation on all three platforms. Two are not, and both
-use **platform file extensions** rather than a runtime `Platform.OS` branch — the
-bundler picks the file, so the platform-specific dependency never enters the other
-bundle at all.
+Five widgets are one implementation on all three platforms. Three are not, and all
+three use **platform file extensions** rather than a runtime `Platform.OS` branch —
+the bundler picks the file, so the platform-specific dependency never enters the
+other bundle at all.
 
 | Widget | Why web differs | Web implementation |
 |---|---|---|
 | `SignaturePad` | `react-native-signature-canvas` needs a WebView; `react-native-webview` has no web build | `PanResponder` + SVG strokes, rasterized to PNG via a detached 2-D canvas |
 | `SkiaEffect` | Skia on web needs the host to load the CanvasKit WASM bundle first | CSS `filter: blur()` + `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode` |
+| `Maps` | `expo-maps` wraps the Google and Apple native SDKs and ships no web build | None — the box is reserved and left empty, and the manifest declares `webSupport: false` |
 
 Both keep the same props, events and `ref` handle. `SignaturePad` returns the same
 `data:image/png;base64,…` string on both, so consumer code never branches.
@@ -58,6 +60,9 @@ Known differences, documented in the props JSDoc and the manifests:
 
 - `SignaturePad` on web uses one stroke width (the mean of `minWidth`/`maxWidth`);
   native tapers with pointer speed.
+- `Maps` renders nothing on web. There is no browser fallback worth shipping (a
+  web map means a second library and an API key), so the web file only keeps the
+  bundle building and the layout stable.
 - `ReorderList` runs on web — `react-native-reorderable-list` declares no native
   modules — but upstream tests iOS and Android only. Best-effort on web.
 

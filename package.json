@@ -1,12 +1,12 @@
 {
   "name": "@wavemaker/react-native-widgets",
-  "description": "Standalone React Native UI widgets — QR code, avatar stack, segment progress, swipe deck, reorder list, signature pad and Skia effects — for iOS, Android and web.",
+  "description": "Standalone React Native widgets — QR code, avatar stack, segment progress, swipe deck, reorder list, signature pad, maps and Skia effects — for iOS, Android and web.",
   "version": "1.0.0",
   "license": "MIT",
   "main": "components/index.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wavemaker/wm-react-native-widgets.git"
+    "url": "https://github.com/IzhanWM/wm-react-native-widgets.git"
   },
   "homepage": "https://wavemaker.github.io/wm-react-native-widgets",
   "keywords": [
@@ -21,6 +21,9 @@
     "reorder",
     "drag-and-drop",
     "signature",
+    "apple-maps",
+    "google-maps",
+    "maps",
     "skia",
     "wavemaker",
     "wmx"
@@ -46,6 +49,9 @@
   },
   "peerDependencies": {
     "@shopify/react-native-skia": "*",
+    "expo": "*",
+    "expo-image": "*",
+    "expo-maps": "*",
     "react": "*",
     "react-native": "*",
     "react-native-gesture-handler": "*",
@@ -55,6 +61,15 @@
   },
   "peerDependenciesMeta": {
     "@shopify/react-native-skia": {
+      "optional": true
+    },
+    "expo": {
+      "optional": true
+    },
+    "expo-image": {
+      "optional": true
+    },
+    "expo-maps": {
       "optional": true
     },
     "react-native-webview": {
@@ -72,6 +87,9 @@
     "adm-zip": "^0.5.16",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "expo": "57.0.24",
+    "expo-image": "57.0.5",
+    "expo-maps": "57.0.3",
     "playwright-core": "^1.48.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",

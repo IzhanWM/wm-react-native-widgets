@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 /**
- * Turns the compiled output in dist/npm-packages/widgets into a publishable
- * package: writes its package.json, copies README/LICENSE, and adds .npmignore.
- *
- * Run after `npm run build:lib`. Both steps together: `npm run generate:package`.
+ * Turns dist/npm-packages/widgets into a publishable package: writes
+ * package.json, copies README/MAPS/LICENSE and .npmignore, run after build:lib.
  */
 
 const fs = require('fs');
@@ -23,9 +21,8 @@ const RUNTIME_DEPS = [
 ];
 
 /**
- * Left to the host app so versions are not duplicated. Skia (SkiaEffect) and
- * WebView (native SignaturePad) are optional: a consumer using neither widget,
- * or running on web only, should not be forced to install them.
+ * Left to the host app so versions aren't duplicated. Skia, WebView and Expo
+ * (Maps) are optional — skip them if you don't use those widgets or run web-only.
  */
 const PEER_DEPS = [
   'react-native-svg',
@@ -33,9 +30,18 @@ const PEER_DEPS = [
   'react-native-reanimated',
   '@shopify/react-native-skia',
   'react-native-webview',
+  'expo',
+  'expo-image',
+  'expo-maps',
 ];
 
-const OPTIONAL_PEER_DEPS = ['@shopify/react-native-skia', 'react-native-webview'];
+const OPTIONAL_PEER_DEPS = [
+  '@shopify/react-native-skia',
+  'react-native-webview',
+  'expo',
+  'expo-image',
+  'expo-maps',
+];
 
 function ensureBuilt() {
   if (!fs.existsSync(path.join(outDir, 'index.js'))) {
@@ -120,6 +126,7 @@ function run() {
   log('Wrote package.json (name=%s, version=%s)', pkg.name, pkg.version);
 
   copyOptional('README.md');
+  copyOptional('MAPS.md');
   copyOptional('LICENSE');
   writeNpmIgnore();
 

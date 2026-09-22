@@ -1,0 +1,271 @@
+{
+  "name": "WMUIMaps",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets",
+  "displayName": "Maps",
+  "description": "Native map surface built on expo-maps, rendering Google Maps on Android and Apple Maps on iOS. Drops pins from a dataset, draws a route between points, and shows the device location. Native only — there is no web preview, so exercise it on a device or emulator.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.0.0",
+    "expo-maps": "57.0.3",
+    "expo-image": "57.0.5"
+  },
+  "keywords": [
+    "map",
+    "maps",
+    "google-maps",
+    "apple-maps",
+    "marker",
+    "pin",
+    "route",
+    "polyline",
+    "geolocation",
+    "geofence",
+    "ui-widgets/maps"
+  ],
+  "props": {
+    "mapType": {
+      "name": "mapType",
+      "displayName": "Map Type",
+      "description": "Map style. Apple Maps has no terrain style and falls back to standard. Default: standard",
+      "type": "string",
+      "widget": "list",
+      "options": [
+        "standard",
+        "satellite",
+        "hybrid",
+        "terrain"
+      ],
+      "defaultValue": "standard",
+      "isList": false,
+      "isRequired": false
+    },
+    "customMapStyle": {
+      "name": "customMapStyle",
+      "displayName": "Custom Map Style",
+      "description": "Google Maps style array as a JSON string, used to restyle roads, labels and terrain. Android only.",
+      "type": "string",
+      "defaultValue": "",
+      "isList": false,
+      "isRequired": false
+    },
+    "latitude": {
+      "name": "latitude",
+      "displayName": "Center Latitude",
+      "description": "Latitude the map is centered on. Rebinding it recenters the map. Default: 12.9716",
+      "type": "number",
+      "defaultValue": 12.9716,
+      "isList": false,
+      "isRequired": true
+    },
+    "longitude": {
+      "name": "longitude",
+      "displayName": "Center Longitude",
+      "description": "Longitude the map is centered on. Rebinding it recenters the map. Default: 77.5946",
+      "type": "number",
+      "defaultValue": 77.5946,
+      "isList": false,
+      "isRequired": true
+    },
+    "zoom": {
+      "name": "zoom",
+      "displayName": "Zoom",
+      "description": "Zoom level of the camera. 0 is the whole world, 12 a city, 16 a street and 20 a building. Default: 12",
+      "type": "number",
+      "defaultValue": 12,
+      "isList": false,
+      "isRequired": false
+    },
+    "markers": {
+      "name": "markers",
+      "displayName": "Markers",
+      "description": "Rows to drop as pins. A row may also carry color to tint its own pin, imageUrl to replace it with an image, and radius for its own coverage circle. Example: [{latitude: 12.9716, longitude: 77.5946, title: 'Bengaluru'}]",
+      "type": "object",
+      "isList": true,
+      "isRequired": true
+    },
+    "latitudeField": {
+      "name": "latitudeField",
+      "displayName": "Latitude Field",
+      "description": "Row field holding the latitude, in both markers and route path. Default: latitude",
+      "type": "string",
+      "defaultValue": "latitude",
+      "isList": false,
+      "isRequired": false
+    },
+    "longitudeField": {
+      "name": "longitudeField",
+      "displayName": "Longitude Field",
+      "description": "Row field holding the longitude, in both markers and route path. Default: longitude",
+      "type": "string",
+      "defaultValue": "longitude",
+      "isList": false,
+      "isRequired": false
+    },
+    "titleField": {
+      "name": "titleField",
+      "displayName": "Title Field",
+      "description": "Marker row field shown as the callout title. Default: title",
+      "type": "string",
+      "defaultValue": "title",
+      "isList": false,
+      "isRequired": false
+    },
+    "descriptionField": {
+      "name": "descriptionField",
+      "displayName": "Description Field",
+      "description": "Marker row field shown as the callout subtitle. Android only — an Apple Maps callout has no subtitle. Default: description",
+      "type": "string",
+      "defaultValue": "description",
+      "isList": false,
+      "isRequired": false
+    },
+    "markerColor": {
+      "name": "markerColor",
+      "displayName": "Marker Color",
+      "description": "Pin color used when a row carries no color of its own. Tints the pin on iOS; on Android it only tints the radius circle, since a Google pin is recolored by giving it a marker icon. Default: #EF4444",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#EF4444",
+      "isList": false,
+      "isRequired": false
+    },
+    "markerIcon": {
+      "name": "markerIcon",
+      "displayName": "Marker Icon",
+      "description": "Image URL drawn in place of the default pin for every marker. A row may override it with its own imageUrl. This is the way to restyle pins on Android.",
+      "type": "string",
+      "defaultValue": "",
+      "isList": false,
+      "isRequired": false
+    },
+    "markerRadius": {
+      "name": "markerRadius",
+      "displayName": "Marker Radius",
+      "description": "Meters of coverage drawn as a tinted circle around every pin, for geofences and service areas. A row may carry its own radius. 0 draws none. Default: 0",
+      "type": "number",
+      "defaultValue": 0,
+      "isList": false,
+      "isRequired": false
+    },
+    "routePath": {
+      "name": "routePath",
+      "displayName": "Route Path",
+      "description": "Ordered points drawn as a line across the map, read with the same latitude and longitude fields.",
+      "type": "object",
+      "isList": true,
+      "isRequired": false
+    },
+    "routeColor": {
+      "name": "routeColor",
+      "displayName": "Route Color",
+      "description": "Stroke color of the route line. Default: #2563EB",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#2563EB",
+      "isList": false,
+      "isRequired": false
+    },
+    "showsUserLocation": {
+      "name": "showsUserLocation",
+      "displayName": "Show User Location",
+      "description": "Draw the blue dot for the device location and show the recenter button. Asks for location permission on first render, and stays off if it is denied. Default: false",
+      "type": "boolean",
+      "defaultValue": false,
+      "isList": false,
+      "isRequired": false
+    },
+    "fitToData": {
+      "name": "fitToData",
+      "displayName": "Fit To Data",
+      "description": "Zoom to enclose every marker and route point instead of using the center and zoom. Default: false",
+      "type": "boolean",
+      "defaultValue": false,
+      "isList": false,
+      "isRequired": false
+    },
+    "height": {
+      "name": "height",
+      "displayName": "Height",
+      "description": "Height of the map surface, as dp (320), a percentage of the parent (50%), or fill to take all the space the page gives it. Leave blank to fill, unless a height is set in the style panel.",
+      "type": "string",
+      "defaultValue": "",
+      "isList": false,
+      "isRequired": false
+    },
+    "interactive": {
+      "name": "interactive",
+      "displayName": "Interactive",
+      "description": "Allow pan, zoom, rotate and tilt gestures. Turn it off for a map inside a scrolling page, so it cannot swallow the scroll. Android only — Apple Maps does not expose gesture toggles. Default: true",
+      "type": "boolean",
+      "defaultValue": true,
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onMapReady": {
+      "name": "onMapReady",
+      "displayName": "On Map Ready",
+      "description": "Fires once the map surface is laid out and ready.",
+      "type": "function",
+      "params": [],
+      "isList": false,
+      "isRequired": false
+    },
+    "onRegionChange": {
+      "name": "onRegionChange",
+      "displayName": "On Region Change",
+      "description": "Fires with the new region once the camera settles, carrying latitude, longitude, latitudeDelta, longitudeDelta, zoom, tilt and bearing.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onMapPress": {
+      "name": "onMapPress",
+      "displayName": "On Map Press",
+      "description": "Fires with the coordinate that was tapped.",
+      "type": "function",
+      "params": [
+        "coordinate"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onLongPress": {
+      "name": "onLongPress",
+      "displayName": "On Long Press",
+      "description": "Fires with the coordinate that was long pressed. Android only.",
+      "type": "function",
+      "params": [
+        "coordinate"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onMarkerPress": {
+      "name": "onMarkerPress",
+      "displayName": "On Marker Press",
+      "description": "Fires with the row behind the tapped pin. On Apple Maps this needs iOS 18 or later.",
+      "type": "function",
+      "params": [
+        "row"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/maps",
+  "marketplace_unsupported": {
+    "icon": "icon.svg"
+  },
+  "webSupport": false
+}

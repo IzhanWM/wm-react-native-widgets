@@ -25,14 +25,11 @@ conventions, and where to change behavior. They are **not** automated tests.
 - Published package name: `@wavemaker/react-native-widgets`.
 - Library source root: `components/` — one folder per widget, compiled into
   `dist/npm-packages/widgets/`.
-- No chart code lives here. The ECharts charts are a separate repo,
-  [`wm-react-native-echarts`](https://github.com/wavemaker/wm-react-native-echarts);
-  neither repo imports the other.
 - Prefer **spec-based development**: add or update a Storybook story first, then
   implement.
 - Do not run `publish:npm` unless the task authorizes a release.
 
-## Related human docs
+## Related docs
 
 - Root [README.md](../README.md) — install, widget table, maintainer build steps.
 - [components/wmx-context.md](../components/wmx-context.md) — WMX JSON schema field reference.
