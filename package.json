@@ -85,6 +85,7 @@
     "@storybook/storybook-deployer": "^2.8.16",
     "@types/react": "~19.1.0",
     "adm-zip": "^0.5.16",
+    "buffer": "^6.0.3",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "expo": "57.0.24",
