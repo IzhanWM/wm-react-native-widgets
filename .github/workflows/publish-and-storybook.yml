@@ -1,51 +1,15 @@
-# Publishes the library to npm and deploys Storybook when `main` is updated (including merges).
-#
-# - NPM_TOKEN: npm automation token with publish permission for the package scope.
-# - Storybook: builds static Storybook and deploys via GitHub Actions (actions/deploy-pages).
-#   GitHub Pages source must be "GitHub Actions" (Settings → Pages → Build and deployment).
-#
-name: Publish npm & deploy Storybook
+
+name: Deploy Storybook
 
 on:
   push:
     branches:
       - main
 
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
-
 permissions:
   contents: read
 
 jobs:
-  publish-npm:
-    name: Publish npm package
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          registry-url: https://registry.npmjs.org/
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build and prepare package
-        run: npm run generate:package
-
-      - name: Publish to npm
-        working-directory: dist/npm-packages/widgets
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --provenance
-
   deploy-storybook:
     name: Deploy Storybook
     runs-on: ubuntu-latest
