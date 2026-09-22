@@ -4,7 +4,7 @@ React Native UI widgets — QR code, avatar stack, segment
 progress, swipe deck, reorder list, signature pad, maps and Skia effects. Seven
 render on **iOS, Android and web** from the same code; **Maps** is native only.
 
-- **Live Storybook:** https://wavemaker.github.io/wm-react-native-widgets
+- **Live Storybook:** https://izhanwm.github.io/wm-react-native-widgets
 
 ---
 
