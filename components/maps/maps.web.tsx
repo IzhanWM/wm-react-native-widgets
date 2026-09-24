@@ -5,9 +5,12 @@ import type { MapsProps } from './maps.props';
 export type {
   MapsProps,
   MapType,
+  MapProvider,
   MapCoordinate,
   MapMarkerRow,
   MapRegionEvent,
+  MapUserLocation,
+  MapMarkerDragEvent,
 } from './maps.props';
 
 // Same sizing rules as the native file, so a page that reserves space for the map
@@ -22,8 +25,9 @@ const toHeightStyle = (height?: number | string): ViewStyle | undefined => {
 };
 
 /**
- * Web stand-in: `expo-maps` ships no web build, so this keeps the native module
- * out of the bundle. Renders an empty box; widget is published `webSupport: false`.
+ * Web stand-in: `react-native-maps` has no web implementation, so this keeps the
+ * native module out of the bundle. Renders an empty box; widget is published
+ * `webSupport: false`.
  */
 const MapsWebComponent = ({ height, style }: MapsProps) => {
   const heightStyle = useMemo(() => {

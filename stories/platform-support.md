@@ -16,12 +16,12 @@ strategy each one uses and what, if anything, differs on web.
 | **Reorder List** | `react-native-reorderable-list` | ✅ | ⚠️ | Works on web; not shown in this repo's Storybook. See the caveat below. |
 | **Signature Pad** | WebView canvas (native) | ✅ | ✅ | **Separate web implementation.** |
 | **Skia Effect** | `@shopify/react-native-skia` | ✅ | ✅ | **Separate web implementation.** |
-| **Maps** | `expo-maps` → Google Maps / Apple Maps | ✅ | ❌ | Native only. Web resolves to an empty box. |
+| **Maps** | `react-native-maps` → Google Maps / Apple Maps | ✅ | ❌ | Native only. Web resolves to an empty box. |
 
 ## Why Maps stops at native
 
-`expo-maps` is a thin wrapper over the Google Maps SDK on Android and MapKit on
-iOS. It has no web build at all, so importing it on web breaks the bundle — and
+`react-native-maps` is a wrapper over the Google Maps SDK and MapKit. It has no
+web implementation, so importing it on web gives an unimplemented view — and
 unlike the two widgets below, there is nothing to reimplement it with: a browser
 map means a second library, a different API and a key of its own.
 

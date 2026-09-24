@@ -22,5 +22,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "build", "coverage", "storybook-static"]
+  "exclude": ["node_modules", "dist", "build", "coverage", "storybook-static", "expo-app"]
 }

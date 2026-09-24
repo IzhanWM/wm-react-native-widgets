@@ -9,7 +9,7 @@
 | `ReorderList` | `reorderlist/` | `react-native-reorderable-list` |
 | `SignaturePad` | `signaturepad/` | WebView canvas (native) / SVG + canvas (web) |
 | `SkiaEffect` | `skiaeffect/` | `@shopify/react-native-skia` / CSS (web) |
-| `Maps` | `maps/` | `expo-maps` — Google Maps (Android) / Apple Maps (iOS), `expo-image` for marker icons |
+| `Maps` | `maps/` | `react-native-maps` — Google Maps (Android) / Apple Maps or Google Maps (iOS), `expo-location` for the location permission |
 
 ## Folder convention
 
@@ -51,7 +51,7 @@ other bundle at all.
 |---|---|---|
 | `SignaturePad` | `react-native-signature-canvas` needs a WebView; `react-native-webview` has no web build | `PanResponder` + SVG strokes, rasterized to PNG via a detached 2-D canvas |
 | `SkiaEffect` | Skia on web needs the host to load the CanvasKit WASM bundle first | CSS `filter: blur()` + `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode` |
-| `Maps` | `expo-maps` wraps the Google and Apple native SDKs and ships no web build | None — the box is reserved and left empty, and the manifest declares `webSupport: false` |
+| `Maps` | `react-native-maps` wraps the Google and Apple native SDKs and has no web implementation | None — the box is reserved and left empty, and the manifest declares `webSupport: false` |
 
 Both keep the same props, events and `ref` handle. `SignaturePad` returns the same
 `data:image/png;base64,…` string on both, so consumer code never branches.

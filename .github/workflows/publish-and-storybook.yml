@@ -9,20 +9,19 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  # Unique per run attempt: re-running the workflow would otherwise leave two
+  # artifacts named "github-pages" in the same run and deploy-pages would fail.
+  ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
 jobs:
-  deploy-storybook:
-    name: Deploy Storybook
+  build:
+    name: Build Storybook
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: pages
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
 
@@ -42,8 +41,23 @@ jobs:
       - name: Upload Storybook artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: ${{ env.ARTIFACT_NAME }}
           path: storybook-static
 
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.ARTIFACT_NAME }}
