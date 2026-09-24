@@ -4,16 +4,16 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+    "url": "https://github.com/IzhanWM/wm-react-native-widgets"
   },
   "homepage": "https://wavemaker.github.io/wm-react-native-widgets",
   "displayName": "Maps",
-  "description": "Native map surface built on expo-maps, rendering Google Maps on Android and Apple Maps on iOS. Drops pins from a dataset, draws a route between points, and shows the device location. Native only — there is no web preview, so exercise it on a device or emulator.",
+  "description": "Native map surface built on react-native-maps, rendering Google Maps on Android, and on iOS when the app has an iOS Google Maps key (Apple Maps otherwise). Drops pins from a dataset, draws a route between points, and shows the device location. Native only — there is no web preview, so exercise it on a device or emulator.",
   "iconUrl": "icon.svg",
   "dependencies": {
     "@wavemaker/react-native-widgets": "1.0.0",
-    "expo-maps": "57.0.3",
-    "expo-image": "57.0.5"
+    "react-native-maps": "1.27.2",
+    "expo-location": "~57.0.19"
   },
   "keywords": [
     "map",
@@ -29,6 +29,20 @@
     "ui-widgets/maps"
   ],
   "props": {
+    "provider": {
+      "name": "provider",
+      "displayName": "Map Provider",
+      "description": "Map SDK on iOS. google renders Google Maps when the app has an iOS Google Maps API key (iosGoogleMapsApiKey in RN preferences) and falls back to Apple Maps without one; default always renders Apple Maps. Android always renders Google Maps. Default: google",
+      "type": "string",
+      "widget": "list",
+      "options": [
+        "default",
+        "google"
+      ],
+      "defaultValue": "google",
+      "isList": false,
+      "isRequired": false
+    },
     "mapType": {
       "name": "mapType",
       "displayName": "Map Type",
@@ -48,7 +62,7 @@
     "customMapStyle": {
       "name": "customMapStyle",
       "displayName": "Custom Map Style",
-      "description": "Google Maps style array as a JSON string, used to restyle roads, labels and terrain. Android only.",
+      "description": "Google Maps style array as a JSON string, used to restyle roads, labels and terrain. Google Maps only: Android, or iOS with the google provider.",
       "type": "string",
       "defaultValue": "",
       "isList": false,
@@ -119,7 +133,7 @@
     "descriptionField": {
       "name": "descriptionField",
       "displayName": "Description Field",
-      "description": "Marker row field shown as the callout subtitle. Android only — an Apple Maps callout has no subtitle. Default: description",
+      "description": "Marker row field shown as the callout subtitle. Default: description",
       "type": "string",
       "defaultValue": "description",
       "isList": false,
@@ -128,7 +142,7 @@
     "markerColor": {
       "name": "markerColor",
       "displayName": "Marker Color",
-      "description": "Pin color used when a row carries no color of its own. Tints the pin on iOS; on Android it only tints the radius circle, since a Google pin is recolored by giving it a marker icon. Default: #EF4444",
+      "description": "Pin color used when a row carries no color of its own. Google Maps keeps only the hue of the color. Default: #EF4444",
       "type": "string",
       "widget": "color",
       "defaultValue": "#EF4444",
@@ -138,7 +152,7 @@
     "markerIcon": {
       "name": "markerIcon",
       "displayName": "Marker Icon",
-      "description": "Image URL drawn in place of the default pin for every marker. A row may override it with its own imageUrl. This is the way to restyle pins on Android.",
+      "description": "Image URL drawn in place of the default pin for every marker. A row may override it with its own imageUrl.",
       "type": "string",
       "defaultValue": "",
       "isList": false,
@@ -150,6 +164,15 @@
       "description": "Meters of coverage drawn as a tinted circle around every pin, for geofences and service areas. A row may carry its own radius. 0 draws none. Default: 0",
       "type": "number",
       "defaultValue": 0,
+      "isList": false,
+      "isRequired": false
+    },
+    "draggable": {
+      "name": "draggable",
+      "displayName": "Draggable",
+      "description": "Lets users long-press and drag pins. A row may carry its own draggable. Pair it with On Marker Drag End to save the new position. Default: false",
+      "type": "boolean",
+      "defaultValue": false,
       "isList": false,
       "isRequired": false
     },
@@ -174,7 +197,7 @@
     "showsUserLocation": {
       "name": "showsUserLocation",
       "displayName": "Show User Location",
-      "description": "Draw the blue dot for the device location and show the recenter button. Asks for location permission on first render, and stays off if it is denied. Default: false",
+      "description": "Draw the blue dot for the device location. Asks for location permission on first render, and stays off if it is denied. The recenter button shows on Google Maps only. Default: false",
       "type": "boolean",
       "defaultValue": false,
       "isList": false,
@@ -201,7 +224,7 @@
     "interactive": {
       "name": "interactive",
       "displayName": "Interactive",
-      "description": "Allow pan, zoom, rotate and tilt gestures. Turn it off for a map inside a scrolling page, so it cannot swallow the scroll. Android only — Apple Maps does not expose gesture toggles. Default: true",
+      "description": "Allow pan, zoom, rotate and tilt gestures. Turn it off for a map inside a scrolling page, so it cannot swallow the scroll. Default: true",
       "type": "boolean",
       "defaultValue": true,
       "isList": false,
@@ -221,7 +244,7 @@
     "onRegionChange": {
       "name": "onRegionChange",
       "displayName": "On Region Change",
-      "description": "Fires with the new region once the camera settles, carrying latitude, longitude, latitudeDelta, longitudeDelta, zoom, tilt and bearing.",
+      "description": "Fires with the new region once the camera settles, carrying latitude, longitude, latitudeDelta, longitudeDelta, zoom, tilt, bearing and isGesture.",
       "type": "function",
       "params": [
         "event"
@@ -243,7 +266,7 @@
     "onLongPress": {
       "name": "onLongPress",
       "displayName": "On Long Press",
-      "description": "Fires with the coordinate that was long pressed. Android only.",
+      "description": "Fires with the coordinate that was long pressed.",
       "type": "function",
       "params": [
         "coordinate"
@@ -254,10 +277,43 @@
     "onMarkerPress": {
       "name": "onMarkerPress",
       "displayName": "On Marker Press",
-      "description": "Fires with the row behind the tapped pin. On Apple Maps this needs iOS 18 or later.",
+      "description": "Fires with the row behind the tapped pin.",
       "type": "function",
       "params": [
         "row"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onCalloutPress": {
+      "name": "onCalloutPress",
+      "displayName": "On Callout Press",
+      "description": "Fires with the row whose callout bubble was tapped.",
+      "type": "function",
+      "params": [
+        "row"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onUserLocationChange": {
+      "name": "onUserLocationChange",
+      "displayName": "On User Location Change",
+      "description": "Fires with the device position (latitude, longitude, altitude, accuracy, heading, speed, timestamp) as it updates while Show User Location is on.",
+      "type": "function",
+      "params": [
+        "location"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onMarkerDragEnd": {
+      "name": "onMarkerDragEnd",
+      "displayName": "On Marker Drag End",
+      "description": "Fires when a dragged pin is dropped, with the row behind it and its new coordinate.",
+      "type": "function",
+      "params": [
+        "event"
       ],
       "isList": false,
       "isRequired": false

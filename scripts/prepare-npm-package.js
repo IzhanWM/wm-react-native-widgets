@@ -21,8 +21,8 @@ const RUNTIME_DEPS = [
 ];
 
 /**
- * Left to the host app so versions aren't duplicated. Skia, WebView and Expo
- * (Maps) are optional — skip them if you don't use those widgets or run web-only.
+ * Left to the host app so versions aren't duplicated. Skia, WebView, Expo and the
+ * Maps packages are optional — skip them if you don't use those widgets or run web-only.
  */
 const PEER_DEPS = [
   'react-native-svg',
@@ -31,16 +31,16 @@ const PEER_DEPS = [
   '@shopify/react-native-skia',
   'react-native-webview',
   'expo',
-  'expo-image',
-  'expo-maps',
+  'react-native-maps',
+  'expo-location',
 ];
 
 const OPTIONAL_PEER_DEPS = [
   '@shopify/react-native-skia',
   'react-native-webview',
   'expo',
-  'expo-image',
-  'expo-maps',
+  'react-native-maps',
+  'expo-location',
 ];
 
 function ensureBuilt() {
@@ -134,7 +134,15 @@ function run() {
 
   if (isYalcAvailable()) {
     execSync('yalc publish', { stdio: 'inherit', cwd: outDir });
-    log('Published to yalc. In your app: yalc add %s', pkg.name);
+    log('Published to yalc');
+    // The demo app consumes the package the way a host app would, not via source paths.
+    const expoAppDir = path.join(root, 'expo-app');
+    if (fs.existsSync(path.join(expoAppDir, 'package.json'))) {
+      execSync(`yalc add ${pkg.name}`, { stdio: 'inherit', cwd: expoAppDir });
+      log('Linked into expo-app');
+    } else {
+      log('In your app: yalc add %s', pkg.name);
+    }
   } else {
     log('Skipping yalc (not on PATH). Install globally: npm i -g yalc');
   }

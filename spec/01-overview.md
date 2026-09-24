@@ -28,7 +28,7 @@ Left to the host app as **peers**: `react`, `react-native`, `react-native-svg`,
 `react-native-gesture-handler`, `react-native-reanimated`, plus the ones marked
 **optional** because a single widget needs them —
 `@shopify/react-native-skia` (`SkiaEffect`), `react-native-webview`
-(native `SignaturePad`), and `expo` + `expo-maps` + `expo-image` (`Maps`).
+(native `SignaturePad`), and `react-native-maps` + `expo-location` (`Maps`).
 
 ## Directory map
 

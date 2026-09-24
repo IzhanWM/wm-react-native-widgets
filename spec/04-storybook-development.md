@@ -77,12 +77,12 @@ yalc add @wavemaker/react-native-widgets
 npx expo start
 ```
 
-`Maps` additionally needs `expo-maps` and `expo-image` installed in that app
-(`npx expo install expo-maps expo-image`), the `expo-maps` config plugin, and a
-Google Maps API key on Android — so it needs a development build, not Expo Go.
-`showsUserLocation` asks for the permission through `expo-maps`, which the
-Android map crashes without, so the plugin needs
-`requestLocationPermission: true`.
+`Maps` additionally needs `react-native-maps` and `expo-location` installed in
+that app (`npx expo install react-native-maps expo-location`), the
+`react-native-maps` config plugin with a Google Maps API key on Android (and on
+iOS for `provider="google"`), and the `expo-location` plugin so
+`showsUserLocation` can ask for the permission. The Android map can crash when
+the location layer comes up without it.
 
 Rerun `npm run generate:package` after library changes. If the app does not pick
 them up after a reload, restart with `npx expo start -c`.

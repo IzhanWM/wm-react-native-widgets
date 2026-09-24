@@ -32,7 +32,7 @@ subpath and never enter a bundle that did not ask for them:
 | --- | --- | --- |
 | SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
 | SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
-| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install expo-maps expo-image` — native only |
+| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location` — native only |
 
 Metro does not tree-shake, so importing anything from the root pulls in every
 widget the root re-exports. Keeping these three off it is what makes their peers
@@ -44,7 +44,7 @@ Every widget is importable on its own subpath, not just those three:
 import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 ```
 
-Maps needs host-app setup of its own — the `expo-maps` config plugin and an Android Google Maps API key.
+Maps needs host-app setup of its own — the `react-native-maps` config plugin with an Android Google Maps API key (and an iOS one for `provider="google"`), plus the `expo-location` plugin for `showsUserLocation`. See [MAPS.md](MAPS.md#host-app-setup).
 ---
 
 ## The widgets
@@ -117,7 +117,7 @@ bundle:
   `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode`, and
   pulls in no WASM.
 
-❌ **Maps is native only**: `expo-maps` ships no web build, so the widget resolves
+❌ **Maps is native only**: `react-native-maps` has no web implementation, so the widget resolves
 to a web file that reserves the same box and renders nothing. A universal page
 still builds; the map appears on iOS and Android only.
 
@@ -165,6 +165,14 @@ widgets are **not** in Storybook: `SwipeDeck` and `ReorderList` sit on
 has no step to run. Verify those on a device, or in a Metro/webpack build that
 runs `babel-preset-expo`.
 
+### Device demo app
+
+[`expo-app/`](expo-app/README.md) is an Expo Router gallery that runs every
+widget on iOS and Android, including Maps (which has no web build) and the two
+Reanimated widgets missing from Storybook. It imports the **built package**
+through yalc, just as a host app would. Maps gets a screen for every prop. See
+[`expo-app/README.md`](expo-app/README.md).
+
 ### Repository layout
 
 ```
@@ -174,6 +182,7 @@ stories/<widget>/       # Storybook stories, one folder per widget
 wmx/<widget>/           # WaveMaker Studio (WMX) manifests, icons, marketplace images
 scripts/                # build, packaging and image-capture scripts
 spec/                   # architecture notes for humans and agents
+expo-app/               # device demo app consuming the built package via yalc
 ```
 
 ---

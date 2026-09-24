@@ -4,6 +4,14 @@ import type { WidgetDataset, WidgetRow } from '../utils/dataset';
 /** Map style the camera renders through. */
 export type MapType = 'standard' | 'satellite' | 'hybrid' | 'terrain';
 
+/**
+ * Map SDK to render with. Android always renders Google Maps. On iOS, `google`
+ * renders Google Maps when the app is built with an iOS Google Maps key (the
+ * `react-native-maps` config plugin's `iosGoogleMapsApiKey`) and Apple Maps when
+ * it is not; `default` always renders Apple Maps.
+ */
+export type MapProvider = 'default' | 'google';
+
 /** A point on the map. */
 export interface MapCoordinate {
   latitude: number;
@@ -12,7 +20,8 @@ export interface MapCoordinate {
 
 /**
  * Shape a marker row is read as. Field names are configurable, so the keys below
- * are the defaults; `color`, `imageUrl` and `radius` are always read by name.
+ * are the defaults; `color`, `imageUrl`, `radius` and `draggable` are always read
+ * by name.
  */
 export interface MapMarkerRow extends WidgetRow {
   /** Read via `latitudeField`. */
@@ -21,7 +30,7 @@ export interface MapMarkerRow extends WidgetRow {
   longitude?: number;
   /** Read via `titleField`, shown as the callout title. */
   title?: string;
-  /** Read via `descriptionField`, shown as the callout subtitle (Android only). */
+  /** Read via `descriptionField`, shown as the callout subtitle. */
   description?: string;
   /** Tints this pin, overriding `markerColor`. */
   color?: string;
@@ -29,6 +38,8 @@ export interface MapMarkerRow extends WidgetRow {
   imageUrl?: string;
   /** Meters of coverage drawn around this pin, overriding `markerRadius`. */
   radius?: number;
+  /** Lets this pin be dragged, overriding `draggable`. */
+  draggable?: boolean;
 }
 
 /** Emitted once the camera settles after a pan, zoom, rotate or tilt. */
@@ -43,6 +54,30 @@ export interface MapRegionEvent extends MapCoordinate {
   tilt?: number;
   /** Camera bearing in degrees. */
   bearing?: number;
+  /** True when a user gesture moved the camera, false for programmatic moves. */
+  isGesture?: boolean;
+}
+
+/** Device position reported by `onUserLocationChange`. */
+export interface MapUserLocation extends MapCoordinate {
+  /** Meters above sea level. */
+  altitude?: number;
+  /** Horizontal accuracy in meters. */
+  accuracy?: number;
+  /** Direction of travel in degrees. */
+  heading?: number;
+  /** Speed in meters per second. */
+  speed?: number;
+  /** Fix time in milliseconds since the epoch. */
+  timestamp?: number;
+}
+
+/** Emitted when a dragged pin is dropped. */
+export interface MapMarkerDragEvent {
+  /** The row behind the pin, as it was before the drag. */
+  row: MapMarkerRow;
+  /** Where the pin was dropped. */
+  coordinate: MapCoordinate;
 }
 
 /**
@@ -51,13 +86,20 @@ export interface MapRegionEvent extends MapCoordinate {
  */
 export interface MapsProps extends CommonWidgetProps {
   /**
+   * Map SDK on iOS. `google` uses Google Maps when the app has an iOS Google Maps
+   * key and falls back to Apple Maps without one; `default` is always Apple Maps.
+   * Android always renders Google Maps.
+   * @default 'google'
+   */
+  provider?: MapProvider | string;
+  /**
    * Map style. Apple Maps has no terrain style and falls back to standard.
    * @default 'standard'
    */
   mapType?: MapType | string;
   /**
    * Google Maps style array as a JSON string, used to restyle roads, labels and
-   * terrain. Android only; ignored when it does not parse.
+   * terrain. Google Maps only; ignored on Apple Maps and when it does not parse.
    */
   customMapStyle?: string;
   /**
@@ -93,25 +135,27 @@ export interface MapsProps extends CommonWidgetProps {
    */
   titleField?: string;
   /**
-   * Marker row field shown as the callout subtitle (Android only).
+   * Marker row field shown as the callout subtitle.
    * @default 'description'
    */
   descriptionField?: string;
   /**
-   * Pin color used when a row has no `color`; Android only tints the radius circle.
+   * Pin color used when a row has no `color`. Google Maps keeps only the hue.
    * @default '#EF4444'
    */
   markerColor?: string;
-  /**
-   * Image drawn in place of the default pin; a row's `imageUrl` overrides it.
-   * Restyles pins on Android.
-   */
+  /** Image URL drawn in place of the default pin; a row's `imageUrl` overrides it. */
   markerIcon?: string;
   /**
    * Meters of coverage drawn as a tinted circle around each pin; 0 draws none.
    * @default 0
    */
   markerRadius?: number;
+  /**
+   * Lets pins be dragged with a long press; a row's `draggable` overrides it.
+   * @default false
+   */
+  draggable?: boolean;
   /** Ordered points drawn as a line, read with the same latitude/longitude fields. */
   routePath?: WidgetDataset;
   /**
@@ -120,8 +164,9 @@ export interface MapsProps extends CommonWidgetProps {
    */
   routeColor?: string;
   /**
-   * Shows device location and recenter button; needs location permission via
-   * expo-maps, stays off if it is denied. @default false
+   * Shows the device location. The widget asks for permission through
+   * `expo-location` when it is installed, and stays off if it is denied. The
+   * recenter button is Google Maps only. @default false
    */
   showsUserLocation?: boolean;
   /**
@@ -130,7 +175,7 @@ export interface MapsProps extends CommonWidgetProps {
    */
   fitToData?: boolean;
   /**
-   * Allow pan/zoom/rotate/tilt gestures; turn off inside a scrolling page. Android only.
+   * Allow pan/zoom/rotate/tilt gestures; turn off inside a scrolling page.
    * @default true
    */
   interactive?: boolean;
@@ -145,11 +190,14 @@ export interface MapsProps extends CommonWidgetProps {
   onRegionChange?: (event: MapRegionEvent) => void;
   /** Called with the coordinate that was tapped. */
   onMapPress?: (coordinate: MapCoordinate) => void;
-  /** Called with the coordinate that was long pressed. Android only. */
+  /** Called with the coordinate that was long pressed. */
   onLongPress?: (coordinate: MapCoordinate) => void;
-  /**
-   * Called with the row behind the tapped pin. On Apple Maps this needs
-   * iOS 18 or later.
-   */
+  /** Called with the row behind the tapped pin. */
   onMarkerPress?: (row: MapMarkerRow) => void;
+  /** Called with the row whose callout bubble was tapped. */
+  onCalloutPress?: (row: MapMarkerRow) => void;
+  /** Called with the device position as it updates while `showsUserLocation` is on. */
+  onUserLocationChange?: (location: MapUserLocation) => void;
+  /** Called when a dragged pin is dropped, with its row and new coordinate. */
+  onMarkerDragEnd?: (event: MapMarkerDragEvent) => void;
 }

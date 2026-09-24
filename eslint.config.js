@@ -5,7 +5,7 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'storybook-static/*'],
+    ignores: ['dist/*', 'storybook-static/*', 'expo-app/*'],
   },
   {
     // Build scripts are CommonJS run by Node, not React Native modules.
