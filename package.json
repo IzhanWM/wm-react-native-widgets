@@ -1,7 +1,7 @@
 {
   "name": "@wavemaker/react-native-widgets",
   "description": "Standalone React Native widgets — QR code, avatar stack, segment progress, swipe deck, reorder list, signature pad, maps and Skia effects — for iOS, Android and web.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "components/index.ts",
   "repository": {

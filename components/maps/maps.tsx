@@ -520,7 +520,9 @@ const MapsComponent = ({
 };
 
 const styles = StyleSheet.create({
-  root: { overflow: 'hidden' },
+  // The map only mounts once the root has a width, so the root cannot take its width
+  // from its content: stretch it across the parent even when the parent aligns to start.
+  root: { overflow: 'hidden', alignSelf: 'stretch' },
   // minHeight is the floor for a page that scrolls, where flex has nothing to fill.
   fill: { flex: 1, minHeight: 240 },
   map: { flex: 1 },

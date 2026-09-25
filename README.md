@@ -165,14 +165,6 @@ widgets are **not** in Storybook: `SwipeDeck` and `ReorderList` sit on
 has no step to run. Verify those on a device, or in a Metro/webpack build that
 runs `babel-preset-expo`.
 
-### Device demo app
-
-[`expo-app/`](expo-app/README.md) is an Expo Router gallery that runs every
-widget on iOS and Android, including Maps (which has no web build) and the two
-Reanimated widgets missing from Storybook. It imports the **built package**
-through yalc, just as a host app would. Maps gets a screen for every prop. See
-[`expo-app/README.md`](expo-app/README.md).
-
 ### Repository layout
 
 ```
