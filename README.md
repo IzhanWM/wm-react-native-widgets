@@ -44,7 +44,6 @@ Every widget is importable on its own subpath, not just those three:
 import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 ```
 
-Maps needs host-app setup of its own — the `react-native-maps` config plugin with an Android Google Maps API key (and an iOS one for `provider="google"`), plus the `expo-location` plugin for `showsUserLocation`. See [MAPS.md](MAPS.md#host-app-setup).
 ---
 
 ## The widgets
