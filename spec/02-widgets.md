@@ -9,7 +9,7 @@
 | `ReorderList` | `reorderlist/` | `react-native-reorderable-list` |
 | `SignaturePad` | `signaturepad/` | WebView canvas (native) / SVG + canvas (web) |
 | `SkiaEffect` | `skiaeffect/` | `@shopify/react-native-skia` / CSS (web) |
-| `Maps` | `maps/` | `react-native-maps` — Google Maps (Android) / Apple Maps or Google Maps (iOS), `expo-location` for the location permission |
+| `Maps` | `maps/` | `react-native-maps` — Google Maps (Android) / Apple Maps or Google Maps (iOS), `expo-location` for the location permission / `@vis.gl/react-google-maps` (web) |
 
 ## Folder convention
 
@@ -51,18 +51,19 @@ other bundle at all.
 |---|---|---|
 | `SignaturePad` | `react-native-signature-canvas` needs a WebView; `react-native-webview` has no web build | `PanResponder` + SVG strokes, rasterized to PNG via a detached 2-D canvas |
 | `SkiaEffect` | Skia on web needs the host to load the CanvasKit WASM bundle first | CSS `filter: blur()` + `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode` |
-| `Maps` | `react-native-maps` wraps the Google and Apple native SDKs and has no web implementation | None — the box is reserved and left empty, and the manifest declares `webSupport: false` |
+| `Maps` | `react-native-maps` wraps the Google and Apple native SDKs and has no web implementation | Google Maps JavaScript API via `@vis.gl/react-google-maps`, keyed by `webApiKey`; data, camera and sizing logic shared through `maps.utils.ts` |
 
-Both keep the same props, events and `ref` handle. `SignaturePad` returns the same
+All three keep the same props, events and `ref` handle. `SignaturePad` returns the same
 `data:image/png;base64,…` string on both, so consumer code never branches.
 
 Known differences, documented in the props JSDoc and the manifests:
 
 - `SignaturePad` on web uses one stroke width (the mean of `minWidth`/`maxWidth`);
   native tapers with pointer speed.
-- `Maps` renders nothing on web. There is no browser fallback worth shipping (a
-  web map means a second library and an API key), so the web file only keeps the
-  bundle building and the layout stable.
+- `Maps` on web needs `webApiKey` (a referrer-restricted Maps JavaScript API
+  key); without it the box is reserved and left empty. Pins use the classic
+  `google.maps.Marker`, because Advanced Markers need a Map ID, which disables
+  `customMapStyle`. A right click also fires `onLongPress`.
 - `ReorderList` runs on web — `react-native-reorderable-list` declares no native
   modules — but upstream tests iOS and Android only. Best-effort on web.
 

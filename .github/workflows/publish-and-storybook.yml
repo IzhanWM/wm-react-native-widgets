@@ -36,6 +36,7 @@ jobs:
       - name: Build Storybook
         env:
           STORYBOOK_BASE_PATH: ${{ endsWith(github.event.repository.name, '.github.io') && '/' || format('/{0}/', github.event.repository.name) }}
+          STORYBOOK_MAPS_KEY: ${{ secrets.STORYBOOK_MAPS_KEY }}
         run: npm run build-storybook
 
       - name: Upload Storybook artifact

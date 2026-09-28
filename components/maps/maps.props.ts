@@ -93,13 +93,20 @@ export interface MapsProps extends CommonWidgetProps {
    */
   provider?: MapProvider | string;
   /**
+   * Google Maps JavaScript API key for web. It ships in the page, so restrict it
+   * to your domains (HTTP referrers). Ignored on iOS and Android, which read their
+   * keys from the app config. Without it, web renders an empty box.
+   */
+  webApiKey?: string;
+  /**
    * Map style. Apple Maps has no terrain style and falls back to standard.
    * @default 'standard'
    */
   mapType?: MapType | string;
   /**
    * Google Maps style array as a JSON string, used to restyle roads, labels and
-   * terrain. Google Maps only; ignored on Apple Maps and when it does not parse.
+   * terrain. Google Maps only (Android, web, iOS with a key); ignored on Apple
+   * Maps and when it does not parse.
    */
   customMapStyle?: string;
   /**
@@ -165,8 +172,9 @@ export interface MapsProps extends CommonWidgetProps {
   routeColor?: string;
   /**
    * Shows the device location. The widget asks for permission through
-   * `expo-location` when it is installed, and stays off if it is denied. The
-   * recenter button is Google Maps only. @default false
+   * `expo-location` when it is installed (the browser asks on web), and stays
+   * off if it is denied. The recenter button is native Google Maps only.
+   * @default false
    */
   showsUserLocation?: boolean;
   /**
@@ -190,7 +198,7 @@ export interface MapsProps extends CommonWidgetProps {
   onRegionChange?: (event: MapRegionEvent) => void;
   /** Called with the coordinate that was tapped. */
   onMapPress?: (coordinate: MapCoordinate) => void;
-  /** Called with the coordinate that was long pressed. */
+  /** Called with the coordinate that was long pressed; on web, right-clicked too. */
   onLongPress?: (coordinate: MapCoordinate) => void;
   /** Called with the row behind the tapped pin. */
   onMarkerPress?: (row: MapMarkerRow) => void;

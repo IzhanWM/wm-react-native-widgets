@@ -1,8 +1,8 @@
 # @wavemaker/react-native-widgets
 
 React Native UI widgets — QR code, avatar stack, segment
-progress, swipe deck, reorder list, signature pad, maps and Skia effects. Seven
-render on **iOS, Android and web** from the same code; **Maps** is native only.
+progress, swipe deck, reorder list, signature pad, maps and Skia effects — all on
+**iOS, Android and web**, behind one public contract per widget.
 
 - **Live Storybook:** https://izhanwm.github.io/wm-react-native-widgets
 
@@ -32,7 +32,7 @@ subpath and never enter a bundle that did not ask for them:
 | --- | --- | --- |
 | SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
 | SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
-| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location` — native only |
+| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location`; for web, `npm install @vis.gl/react-google-maps` |
 
 Metro does not tree-shake, so importing anything from the root pulls in every
 widget the root re-exports. Keeping these three off it is what makes their peers
@@ -85,8 +85,8 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
       <b>Skia Effect</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/markers.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
-      <b>Maps</b> — native only
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/thumbnail-map.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
+      <b>Maps</b>
     </td>
   </tr>
 </table>
@@ -100,9 +100,9 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 | **Reorder List** | Long-press and drag rows into a new order | ✅ | ⚠️ |
 | **Signature Pad** | Freehand capture exported as a base64 PNG | ✅ | ✅ |
 | **Skia Effect** | Blend modes and blur through a per-pixel canvas | ✅ | ✅ |
-| **Maps** | Google/Apple map with pins, routes and user location | ✅ | ❌ |
+| **Maps** | Google/Apple map with pins, routes and user location | ✅ | ✅ |
 
-Two widgets could not reach web through their native library, so each ships a
+Three widgets could not reach web through their native library, so each ships a
 **separate web implementation** behind the same public contract — selected by
 platform file extension, so the native-only dependency never enters the web
 bundle:
@@ -115,10 +115,10 @@ bundle:
   bundle first. The web build reproduces the composition with CSS `filter` and
   `mix-blend-mode`, which map one-to-one onto Skia's `Blur` and `blendMode`, and
   pulls in no WASM.
-
-❌ **Maps is native only**: `react-native-maps` has no web implementation, so the widget resolves
-to a web file that reserves the same box and renders nothing. A universal page
-still builds; the map appears on iOS and Android only.
+- **Maps** — `react-native-maps` wraps the native Google and Apple SDKs and has
+  no web build. The web build renders Google Maps through the Maps JavaScript API
+  (`@vis.gl/react-google-maps`), with the same props and event payloads. It needs
+  a web key in `webApiKey`; without one the box is reserved and left empty.
 
 ⚠️ **Reorder List on web**: `react-native-reorderable-list` declares no native
 modules, so it runs on web and drag works — but upstream tests iOS and Android

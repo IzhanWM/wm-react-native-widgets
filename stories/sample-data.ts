@@ -43,3 +43,47 @@ export const SUNSET_BLOBS = [
   { id: 3, color: '#F97316', radius: 0.3 },
   { id: 4, color: '#A855F7', radius: 0.26 },
 ];
+
+/** Outlets around central Bengaluru for Maps. The last row overrides color and radius. */
+export const OUTLETS = [
+  { id: 1, title: 'MG Road', description: '12 MG Road, Ashok Nagar', latitude: 12.9756, longitude: 77.6066 },
+  { id: 2, title: 'Indiranagar', description: '100 Feet Road, HAL 2nd Stage', latitude: 12.9719, longitude: 77.6412 },
+  { id: 3, title: 'Koramangala', description: '80 Feet Road, 4th Block', latitude: 12.9352, longitude: 77.6245 },
+  { id: 4, title: 'Jayanagar', description: '11th Main, 4th Block', latitude: 12.925, longitude: 77.5938 },
+  { id: 5, title: 'Malleshwaram', description: 'Sampige Road, 8th Cross', latitude: 13.0035, longitude: 77.5709, color: '#0E7C86', radius: 900 },
+];
+
+/** Delivery route through the outlets, in order. */
+export const DELIVERY_ROUTE = [
+  { latitude: 13.0035, longitude: 77.5709 },
+  { latitude: 12.9756, longitude: 77.6066 },
+  { latitude: 12.9719, longitude: 77.6412 },
+  { latitude: 12.9352, longitude: 77.6245 },
+  { latitude: 12.925, longitude: 77.5938 },
+];
+
+/** Muted Google Maps style JSON for Maps' customMapStyle. */
+export const MUTED_MAP_STYLE = JSON.stringify([
+  { elementType: 'geometry', stylers: [{ color: '#F1F3F4' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#5F6368' }] },
+  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#C9DDE3' }] },
+]);
+
+/**
+ * Outlets as a Studio live variable hands them over: wrapped in `dataSet`, with
+ * the page's own column names, and two rows whose coordinates did not resolve.
+ */
+export const STUDIO_OUTLETS = {
+  dataSet: [
+    ...OUTLETS.map(({ title, description, latitude, longitude }) => ({
+      name: title,
+      address: description,
+      lat: String(latitude),
+      lng: String(longitude),
+    })),
+    { name: 'Pending survey', address: 'No coordinates yet', lat: null, lng: '' },
+    { name: 'Bad import', address: 'Garbled row', lat: 'n/a', lng: 'n/a' },
+  ],
+};

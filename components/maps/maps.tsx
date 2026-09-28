@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LayoutChangeEvent, Platform, StyleSheet, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, Platform, StyleSheet, View } from 'react-native';
 import MapView, {
   Circle,
   Marker,
@@ -12,8 +12,21 @@ import MapView, {
   type Region,
   type UserLocationChangeEvent,
 } from 'react-native-maps';
-import { toRows } from '../utils/dataset';
-import type { MapMarkerRow, MapsProps } from './maps.props';
+import type { MapsProps } from './maps.props';
+import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
+  DEFAULT_ZOOM,
+  FIT_PADDING,
+  SINGLE_POINT_ZOOM,
+  clampZoom,
+  isSinglePoint,
+  useCameraTarget,
+  useFitPoints,
+  useHeightStyle,
+  useMarkerPoints,
+  useRouteCoordinates,
+} from './maps.utils';
 
 export type {
   MapsProps,
@@ -26,13 +39,7 @@ export type {
   MapMarkerDragEvent,
 } from './maps.props';
 
-const DEFAULT_LATITUDE = 12.9716;
-const DEFAULT_LONGITUDE = 77.5946;
-const FIT_PADDING = 48;
 const ANIMATION_DURATION = 500;
-const DEFAULT_ZOOM = 12;
-const SINGLE_POINT_ZOOM = 16;
-const MAX_ZOOM = 20;
 // Web Mercator tile size. The world is TILE_SIZE * 2^zoom points across, which is
 // what converts between a zoom level and the region span Apple Maps works in.
 const TILE_SIZE = 256;
@@ -72,33 +79,7 @@ const hasIosGoogleMaps = (): boolean => {
 
 const GOOGLE_AVAILABLE = Platform.OS === 'android' || (Platform.OS === 'ios' && hasIosGoogleMaps());
 
-type MarkerPoint = {
-  key: string;
-  row: MapMarkerRow;
-  coordinate: LatLng;
-  title?: string;
-  description?: string;
-  tint: string;
-  iconUrl?: string;
-  radius: number;
-  draggable: boolean;
-};
-
 type Size = { width: number; height: number };
-
-// Number(null) and Number('') are 0, which would pin a row with a missing
-// coordinate at 0,0 instead of dropping it.
-const toNumber = (value: unknown, fallback = NaN): number => {
-  if (value === null || value === undefined || value === '') return fallback;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const toText = (value: unknown): string | undefined =>
-  value === undefined || value === null || value === '' ? undefined : String(value);
-
-const toBoolean = (value: unknown, fallback: boolean): boolean =>
-  value === undefined || value === null ? fallback : value === true || value === 'true';
 
 // Pins are colored with a hex from the Studio color picker, so a radius circle can
 // reuse that color at low alpha instead of asking for a fill color of its own.
@@ -116,19 +97,6 @@ const withAlpha = (color: string, alpha: number): string => {
   // eslint-disable-next-line no-bitwise
   return `rgba(${(value >> 16) & 255},${(value >> 8) & 255},${value & 255},${alpha})`;
 };
-
-// A map has no content height of its own: the height prop wins, then the Studio
-// style panel's height, and otherwise it fills the space the page gives it.
-const toHeightStyle = (height?: number | string): ViewStyle | undefined => {
-  const value = typeof height === 'string' ? height.trim() : height;
-  if (value === undefined || value === null || value === '') return undefined;
-  if (value === 'fill') return styles.fill;
-  if (typeof value === 'string' && value.endsWith('%')) return { height: value as any };
-  const dp = toNumber(value);
-  return Number.isFinite(dp) ? { height: dp } : undefined;
-};
-
-const clampZoom = (zoom: number) => Math.min(Math.max(zoom, 0), MAX_ZOOM);
 
 // Camera zoom is Google Maps only in react-native-maps, so Apple Maps is driven by
 // the region span a zoom level shows across a view of this size.
@@ -186,7 +154,7 @@ const APPLE_MAP_TYPES: Record<string, 'standard' | 'satellite' | 'hybrid'> = {
 /**
  * Native map on `react-native-maps`: Google Maps on Android, and on iOS when the
  * app is built with an iOS Google Maps key; Apple Maps otherwise or with
- * `provider="default"`. `maps.web.tsx` stands in on web.
+ * `provider="default"`. `maps.web.tsx` renders Google Maps JS on web.
  */
 const MapsComponent = ({
   provider = 'google',
@@ -227,65 +195,22 @@ const MapsComponent = ({
   const size = layout && layout.width > 0 && layout.height > 0 ? layout : null;
   const isGoogle = Platform.OS === 'android' || (provider === 'google' && GOOGLE_AVAILABLE);
 
-  const markerPoints = useMemo<MarkerPoint[]>(
-    () =>
-      toRows(markers)
-        .map((row, index) => {
-          const lat = toNumber(row?.[latitudeField]);
-          const lng = toNumber(row?.[longitudeField]);
-          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-          return {
-            // Index keeps keys unique even when rows share an id.
-            key: `marker-${index}`,
-            row,
-            coordinate: { latitude: lat, longitude: lng },
-            title: toText(row?.[titleField]),
-            description: toText(row?.[descriptionField]),
-            tint: row?.color || markerColor,
-            iconUrl: toText(row?.imageUrl) || toText(markerIcon),
-            radius: toNumber(row?.radius, toNumber(markerRadius, 0)),
-            // Studio can bind the widget prop as the string 'false', which is truthy.
-            draggable: toBoolean(row?.draggable, toBoolean(draggable, false)),
-          } as MarkerPoint;
-        })
-        .filter(Boolean) as MarkerPoint[],
-    [
-      markers,
-      latitudeField,
-      longitudeField,
-      titleField,
-      descriptionField,
-      markerColor,
-      markerIcon,
-      markerRadius,
-      draggable,
-    ]
-  );
-
-  const routeCoordinates = useMemo<LatLng[]>(
-    () =>
-      toRows(routePath)
-        .map((row) => ({
-          latitude: toNumber(row?.[latitudeField]),
-          longitude: toNumber(row?.[longitudeField]),
-        }))
-        .filter((point) => Number.isFinite(point.latitude) && Number.isFinite(point.longitude)),
-    [routePath, latitudeField, longitudeField]
-  );
+  const markerPoints = useMarkerPoints({
+    markers,
+    latitudeField,
+    longitudeField,
+    titleField,
+    descriptionField,
+    markerColor,
+    markerIcon,
+    markerRadius,
+    draggable,
+  });
+  const routeCoordinates = useRouteCoordinates(routePath, latitudeField, longitudeField);
 
   const userLocationEnabled = useLocationPermission(showsUserLocation);
 
-  const camera = useMemo(
-    () => ({
-      center: {
-        latitude: toNumber(latitude, DEFAULT_LATITUDE),
-        longitude: toNumber(longitude, DEFAULT_LONGITUDE),
-      },
-      zoom: clampZoom(toNumber(zoom, DEFAULT_ZOOM)),
-    }),
-    [latitude, longitude, zoom]
-  );
-  const cameraSignature = `${camera.center.latitude},${camera.center.longitude},${camera.zoom}`;
+  const { camera, cameraSignature } = useCameraTarget(latitude, longitude, zoom);
   // Seeded with the mount value: the initial camera already placed the map there,
   // so only later changes to the props should move it.
   const appliedCameraRef = useRef(cameraSignature);
@@ -316,24 +241,12 @@ const MapsComponent = ({
     [isGoogle, size]
   );
 
-  // Keyed on the coordinates rather than the row arrays, so a page that rebuilds
-  // its dataset on every render does not keep snapping the camera back.
-  const fitPoints = useMemo(
-    () => [...markerPoints.map((point) => point.coordinate), ...routeCoordinates],
-    [markerPoints, routeCoordinates]
-  );
-  const fitSignature = fitPoints.map((p) => `${p.latitude},${p.longitude}`).join('|');
+  const { fitPoints, fitSignature } = useFitPoints(markerPoints, routeCoordinates);
 
   useEffect(() => {
     if (!ready || !fitToData || !fitPoints.length) return;
-    const first = fitPoints[0];
-    const samePoint = fitPoints.every(
-      (p) => p.latitude === first.latitude && p.longitude === first.longitude
-    );
-    // A single pin, or several stacked on one spot, has no span to fit and
-    // would otherwise zoom all the way in.
-    if (samePoint) {
-      moveCamera(first, SINGLE_POINT_ZOOM);
+    if (isSinglePoint(fitPoints)) {
+      moveCamera(fitPoints[0], SINGLE_POINT_ZOOM);
       return;
     }
     mapRef.current?.fitToCoordinates(fitPoints, {
@@ -426,13 +339,7 @@ const MapsComponent = ({
     [onUserLocationChange]
   );
 
-  const heightStyle = useMemo(() => {
-    const explicit = toHeightStyle(height);
-    if (explicit) return explicit;
-    const themed = StyleSheet.flatten(style) as ViewStyle | undefined;
-    const sized = themed?.height !== undefined || themed?.flex !== undefined;
-    return sized ? undefined : styles.fill;
-  }, [height, style]);
+  const heightStyle = useHeightStyle(height, style);
 
   const resolvedMapType = isGoogle
     ? (GOOGLE_MAP_TYPES[mapType] ?? 'standard')
@@ -523,8 +430,6 @@ const styles = StyleSheet.create({
   // The map only mounts once the root has a width, so the root cannot take its width
   // from its content: stretch it across the parent even when the parent aligns to start.
   root: { overflow: 'hidden', alignSelf: 'stretch' },
-  // minHeight is the floor for a page that scrolls, where flex has nothing to fill.
-  fill: { flex: 1, minHeight: 240 },
   map: { flex: 1 },
 });
 

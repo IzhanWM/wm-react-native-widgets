@@ -20,6 +20,10 @@ Config: `.storybook/main.ts` (Vite + `@storybook/react-vite`).
 Shims under `.storybook/shims/` stub RN internals missing on web
 (`codegenNativeComponent`, `PressabilityDebug`). Skia is excluded from
 `optimizeDeps`; `SkiaEffect` runs its `.web.tsx` implementation in Storybook.
+`Maps` runs its web implementation on the Google Maps JavaScript API with the
+key from the `STORYBOOK_MAPS_KEY` env var: a git-ignored `.env` locally, the
+`STORYBOOK_MAPS_KEY` repo secret in the deploy workflow. Without it the maps
+render empty.
 `resolveExtensions` prefers `*.web.*`, and `optimizeDeps` loads `.js` with the
 JSX loader because `react-native-qrcode-svg` ships JSX in `.js` files.
 
@@ -66,8 +70,8 @@ documented in `wmx/<widget>/wmx.json` and their `.props.ts` JSDoc.
 ## Native verification
 
 There is no demo app in this repo. To exercise the native code paths of
-`SignaturePad`, `SkiaEffect`, `SwipeDeck` and `ReorderList` — and `Maps`, which
-runs on device only — link the built package into an Expo app:
+`SignaturePad`, `SkiaEffect`, `SwipeDeck`, `ReorderList` and `Maps` — whose
+primary target is device — link the built package into an Expo app:
 
 ```bash
 npm install -g yalc

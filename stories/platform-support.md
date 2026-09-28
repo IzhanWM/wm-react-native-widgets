@@ -1,6 +1,6 @@
 # UI widgets — platform support
 
-Every widget in `@wavemaker/react-native-widgets` except **Maps** renders on
+Every widget in `@wavemaker/react-native-widgets` renders on
 **iOS, Android and web**. Getting there took a different strategy per widget,
 because the underlying libraries do not all reach web. This page records which
 strategy each one uses and what, if anything, differs on web.
@@ -16,21 +16,9 @@ strategy each one uses and what, if anything, differs on web.
 | **Reorder List** | `react-native-reorderable-list` | ✅ | ⚠️ | Works on web; not shown in this repo's Storybook. See the caveat below. |
 | **Signature Pad** | WebView canvas (native) | ✅ | ✅ | **Separate web implementation.** |
 | **Skia Effect** | `@shopify/react-native-skia` | ✅ | ✅ | **Separate web implementation.** |
-| **Maps** | `react-native-maps` → Google Maps / Apple Maps | ✅ | ❌ | Native only. Web resolves to an empty box. |
+| **Maps** | `react-native-maps` → Google Maps / Apple Maps | ✅ | ✅ | **Separate web implementation** on the Google Maps JavaScript API. Needs a web key. |
 
-## Why Maps stops at native
-
-`react-native-maps` is a wrapper over the Google Maps SDK and MapKit. It has no
-web implementation, so importing it on web gives an unimplemented view — and
-unlike the two widgets below, there is nothing to reimplement it with: a browser
-map means a second library, a different API and a key of its own.
-
-`maps.web.tsx` therefore renders the widget's box, sized by the same `height`
-rules as the native file, and nothing inside it. A universal page keeps building
-and keeps its layout; the map appears on device. The WMX manifest declares
-`webSupport: false`, so Studio does not offer it in web preview.
-
-## Why two widgets needed a second implementation
+## Why three widgets needed a second implementation
 
 ### Signature Pad
 
@@ -45,6 +33,22 @@ same `data:image/png;base64,…` string**, so a page never branches on platform.
 
 The one visible difference: on device the stroke tapers between `minWidth` and
 `maxWidth` with pointer speed; on web the two are averaged into a single width.
+
+### Maps
+
+`react-native-maps` is a wrapper over the Google Maps SDK and MapKit. It has no
+web implementation, so importing it on web gives an unimplemented view.
+
+`maps.web.tsx` therefore renders Google Maps through the **Maps JavaScript API**
+with `@vis.gl/react-google-maps`. That is the same map Android renders, so tiles,
+map types, `customMapStyle` and zoom levels match device. Props and event
+payloads are identical; the data, camera and sizing logic is shared with the
+native file through `maps.utils.ts`.
+
+The browser map needs a key of its own, `webApiKey`, restricted to your domains.
+Without one the widget reserves its box at the same `height` and leaves it
+empty, so a universal page keeps its layout. Device stays the primary target;
+web is there so Studio's web preview and this Storybook show the real map.
 
 ### Skia Effect
 
@@ -61,7 +65,7 @@ the Skia module is never imported there.
 
 ## How the split works
 
-Both use React Native's platform file extensions:
+All three use React Native's platform file extensions:
 
 ```
 signaturepad/
@@ -121,7 +125,8 @@ Without it the pan recogniser never activates and the deck simply will not move.
 
 ### Optional peer dependencies
 
-`@shopify/react-native-skia` and `react-native-webview` are declared **optional**
-peers. An app that uses only the QR code or avatar stack does not have to install
-either; npm will not warn. Install them when you use the Skia Effect or the
-native Signature Pad.
+`@shopify/react-native-skia`, `react-native-webview`, `react-native-maps`,
+`expo-location` and `@vis.gl/react-google-maps` are declared **optional** peers.
+An app that uses only the QR code or avatar stack does not have to install any of
+them; npm will not warn. Install them when you use the Skia Effect, the native
+Signature Pad, or Maps — `@vis.gl/react-google-maps` only if the app builds for web.

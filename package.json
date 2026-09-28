@@ -49,6 +49,7 @@
   },
   "peerDependencies": {
     "@shopify/react-native-skia": "*",
+    "@vis.gl/react-google-maps": "*",
     "expo": "*",
     "expo-location": "*",
     "react": "*",
@@ -61,6 +62,9 @@
   },
   "peerDependenciesMeta": {
     "@shopify/react-native-skia": {
+      "optional": true
+    },
+    "@vis.gl/react-google-maps": {
       "optional": true
     },
     "expo": {
@@ -84,6 +88,7 @@
     "@storybook/react-vite": "10.3.5",
     "@storybook/storybook-deployer": "^2.8.16",
     "@types/react": "~19.1.0",
+    "@vis.gl/react-google-maps": "1.10.1",
     "adm-zip": "^0.5.16",
     "buffer": "^6.0.3",
     "eslint": "^9.25.0",

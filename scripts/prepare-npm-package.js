@@ -33,6 +33,7 @@ const PEER_DEPS = [
   'expo',
   'react-native-maps',
   'expo-location',
+  '@vis.gl/react-google-maps',
 ];
 
 const OPTIONAL_PEER_DEPS = [
@@ -41,6 +42,7 @@ const OPTIONAL_PEER_DEPS = [
   'expo',
   'react-native-maps',
   'expo-location',
+  '@vis.gl/react-google-maps',
 ];
 
 function ensureBuilt() {

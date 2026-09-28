@@ -1,8 +1,8 @@
 # Getting started
 
 `@wavemaker/react-native-widgets` is a set of eight standalone React Native UI
-widgets. Seven of them run on **iOS, Android and web** from the same code —
-nothing in your page branches on platform. **Maps** is native only.
+widgets. All eight run on **iOS, Android and web** behind one public contract —
+nothing in your page branches on platform.
 
 ## Install
 
@@ -31,7 +31,7 @@ so a root import would drag their peers in for everyone:
 | --- | --- | --- |
 | SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
 | SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
-| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location` — native only |
+| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location`; for web, `npm install @vis.gl/react-google-maps` |
 
 Every widget is importable on its own subpath, not just those three:
 
@@ -41,7 +41,8 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 
 Maps also needs the `react-native-maps` config plugin with an Android Google
 Maps API key, and the `expo-location` plugin for `showsUserLocation`, in the
-host app. Its props, events and per-platform behaviour are in
+host app. On web it needs a Google Maps JavaScript API key in `webApiKey`. Its
+props, events and per-platform behaviour are in `MAPS.md` at the package root.
 
 ## Binding data
 
