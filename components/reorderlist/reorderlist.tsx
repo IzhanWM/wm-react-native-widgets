@@ -31,6 +31,8 @@ interface RowProps {
   onItemPress?: (row: ReorderRow, index: number) => void;
 }
 
+const GRIP_DOTS = [0, 1, 2, 3, 4, 5];
+
 /**
  * `useReorderableDrag` and `useIsActive` are only valid inside a row rendered by
  * `ReorderableList`, so the row lives in its own component.
@@ -72,7 +74,13 @@ const Row = ({
       <Text style={[styles.label, { color: labelColor }]} numberOfLines={1}>
         {label != null ? String(label) : ''}
       </Text>
-      {enabled && <View style={styles.grip} />}
+      {enabled && (
+        <View style={styles.grip}>
+          {GRIP_DOTS.map((dot) => (
+            <View key={dot} style={styles.gripDot} />
+          ))}
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -178,11 +186,19 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   label: { fontSize: 15, flex: 1 },
+  // Six-dot drag handle: two columns of three, wrapped from a fixed-width box.
   grip: {
-    width: 18,
-    height: 2,
+    width: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 4,
+    rowGap: 3,
+  },
+  gripDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
     backgroundColor: '#9CA3AF',
-    borderRadius: 1,
   },
 });
 

@@ -330,6 +330,7 @@
   },
   "group": "ui-widgets/maps",
   "marketplace_unsupported": {
+    "thumbnailImage": "/assets/images/thumbnail.png",
     "icon": "icon.svg",
     "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-maps--default"
   },

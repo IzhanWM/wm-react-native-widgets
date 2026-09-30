@@ -85,7 +85,7 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
       <b>Skia Effect</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/thumbnail-map.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/thumbnail.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
       <b>Maps</b>
     </td>
   </tr>
