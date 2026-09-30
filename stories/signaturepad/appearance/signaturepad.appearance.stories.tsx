@@ -13,7 +13,7 @@ export const BlueInk: Story = {
 export const DarkCanvas: Story = {
   args: { penColor: '#F8FAFC', backgroundColor: '#0F172A' },
   parameters: {
-    note: 'backgroundColor is baked into the exported PNG, so a dark pad exports a dark image.',
+    note: 'The exported PNG keeps the dark background.',
   },
 };
 

@@ -76,8 +76,7 @@ paths — they stayed as they were when the widgets moved into this repo, so
 existing Studio installs keep resolving.
 
 `previewUrl` values encode Storybook story ids (`?path=/story/ui-widgets-qr-code--default`),
-so renaming a story title breaks them. `SwipeDeck` and `ReorderList` have no
-stories (see `spec/02-widgets.md`), so their `previewUrl` values are aspirational.
+so renaming a story title breaks them.
 
 ### wmx index.tsx
 

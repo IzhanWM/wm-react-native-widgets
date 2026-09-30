@@ -43,6 +43,6 @@ export const OnMemberSelect: Story = {
     dataset: TEAM_MEMBERS,
   },
   parameters: {
-    note: 'The overflow bubble is deliberately not tappable — it represents no single row.',
+    note: 'The +N bubble is not tappable.',
   },
 };

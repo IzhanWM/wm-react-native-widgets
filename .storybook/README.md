@@ -35,8 +35,11 @@ stories/<widget>/
 Titles are `UI Widgets/<Widget Name>/<Slice>`, which is what the `previewUrl`
 values in the WMX manifests point at — renaming a title breaks those links.
 
-## Not in Storybook
+## Reanimated worklets
 
-`SwipeDeck` and `ReorderList` sit on `react-native-reanimated` v4, which needs a
-worklets transform this Vite setup has no step to run. They are verified on
-device instead — see `stories/platform-support.md`.
+`SwipeDeck` and `ReorderList` sit on `react-native-reanimated` v4, whose worklets
+need the `react-native-worklets` Babel plugin. Vite has no Babel step, so
+`main.ts` runs it on the files matched by `WORKLET_SOURCES` — once in an esbuild
+plugin for dev pre-bundling, once as a Vite `transform` for everything else.
+Add a new worklet widget to that pattern, and restart with
+`npm run storybook:clean` after changing it. See `spec/04-storybook-development.md`.

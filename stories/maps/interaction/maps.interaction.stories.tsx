@@ -49,10 +49,7 @@ const EventLog = ({ lines }: { lines: string[] }) => (
   </View>
 );
 
-/**
- * Every event with its payload. Pins are draggable; tap one for its callout and
- * tap the callout for `onCalloutPress`. On web, a right click is the long press.
- */
+/** Every event with its payload. On web, a right click is the long press. */
 export const Events: Story = {
   render: (args) => {
     const { lines, log } = useEventLog();

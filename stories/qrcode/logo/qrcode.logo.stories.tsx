@@ -7,14 +7,11 @@ type Story = StoryObj<typeof meta>;
 const value = 'https://www.wavemaker.com';
 const logoUrl = 'https://www.wavemaker.com/wp-content/uploads/2021/09/favicon.png';
 
-/**
- * A centered logo occludes part of the symbol, so raise the error correction
- * level to `H` — it tolerates roughly 30% damage and keeps the code scannable.
- */
+/** A centered logo, with error correction `H` so the code still scans. */
 export const WithLogo: Story = {
   args: { value, size: 220, logoUrl, logoSize: 48, errorCorrection: 'H' },
   parameters: {
-    note: 'Logo plus errorCorrection="H". Always test a logo-bearing code with a real scanner.',
+    note: 'Test logo codes with a real scanner.',
   },
 };
 

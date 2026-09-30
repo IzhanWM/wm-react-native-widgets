@@ -5,20 +5,14 @@ import { DELIVERY_ROUTE, OUTLETS, STUDIO_OUTLETS } from '../sample-data';
 export default { ...meta, title: 'UI Widgets/Maps', tags: ['autodocs'] };
 type Story = StoryObj<typeof meta>;
 
-/**
- * Pins from a dataset, framed with `fitToData`. Tap a pin for its callout.
- *
- * Storybook runs the **web** implementation, Google Maps through the Maps
- * JavaScript API, with the key from `STORYBOOK_MAPS_KEY`; paste a key into the
- * Web API Key control to use your own. On device the same props render `react-native-maps`.
- */
+/** Pins from a dataset, framed with `fitToData`. Tap a pin for its callout. */
 export const Default: Story = {
   args: {
     markers: OUTLETS,
     fitToData: true,
   },
   parameters: {
-    note: 'Web preview on the Google Maps JavaScript API. Without a Web API Key the box stays empty.',
+    note: 'Needs a Web API Key; without one the box stays empty.',
     source: '<Maps webApiKey={key} markers={outlets} fitToData height={380} />',
   },
 };
@@ -44,12 +38,7 @@ export const FixedCamera: Story = {
   },
 };
 
-/**
- * Markers bound the way a Studio live variable delivers them: a `{ dataSet }`
- * wrapper, the page's own column names mapped through the `*Field` props, and
- * coordinates as strings. The two rows with unresolved coordinates are dropped
- * rather than pinned at 0,0.
- */
+/** A Studio variable: `{ dataSet }` wrapper, custom column names, string coordinates. */
 export const StudioBinding: Story = {
   args: {
     markers: STUDIO_OUTLETS,
@@ -60,7 +49,7 @@ export const StudioBinding: Story = {
     fitToData: true,
   },
   parameters: {
-    note: 'Seven rows in the dataSet; five pins. The two rows with null / "n/a" coordinates are skipped.',
+    note: 'Seven rows, five pins: rows without valid coordinates are skipped.',
     source:
       '<Maps markers={Variables.outlets} latitudeField="lat" longitudeField="lng" titleField="name" descriptionField="address" fitToData />',
   },

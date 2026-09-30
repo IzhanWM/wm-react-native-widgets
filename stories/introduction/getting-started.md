@@ -1,8 +1,6 @@
 # Getting started
 
-`@wavemaker/react-native-widgets` is a set of eight standalone React Native UI
-widgets. All eight run on **iOS, Android and web** behind one public contract —
-nothing in your page branches on platform.
+Standalone widgets for WaveMaker mobile apps. All eight run on **iOS, Android and web.**
 
 ## Install
 
@@ -13,8 +11,6 @@ npm install react-native-svg react-native-gesture-handler react-native-reanimate
 
 ## Use a widget
 
-Five widgets come off the package root:
-
 ```tsx
 import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-widgets';
 
@@ -23,54 +19,32 @@ import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-wi
 <SegmentProgress dataset={segments} total={128} />
 ```
 
-The other three each pull a peer of their own, so they live on their own subpath
-and stay out of any bundle that did not ask for them — Metro does not tree-shake,
-so a root import would drag their peers in for everyone:
+Three widgets need a peer of their own, so they import from a subpath:
 
 | Widget | Import from | Also install |
 | --- | --- | --- |
-| SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `npm install @shopify/react-native-skia` |
-| SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `npm install react-native-webview` — native only |
-| Maps | `@wavemaker/react-native-widgets/maps` | `npx expo install react-native-maps expo-location`; for web, `npm install @vis.gl/react-google-maps` |
+| SkiaEffect | `@wavemaker/react-native-widgets/skiaeffect` | `@shopify/react-native-skia` |
+| SignaturePad | `@wavemaker/react-native-widgets/signaturepad` | `react-native-webview` (native only) |
+| Maps | `@wavemaker/react-native-widgets/maps` | `react-native-maps`, `expo-location`; `@vis.gl/react-google-maps` for web |
 
-Every widget is importable on its own subpath, not just those three:
-
-```tsx
-import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
-```
-
-Maps also needs the `react-native-maps` config plugin with an Android Google
-Maps API key, and the `expo-location` plugin for `showsUserLocation`, in the
-host app. On web it needs a Google Maps JavaScript API key in `webApiKey`. Its
-props, events and per-platform behaviour are in `MAPS.md` at the package root.
+Maps also needs a Google Maps API key in the host app's `react-native-maps`
+config plugin, and a `webApiKey` on web.
 
 ## Binding data
 
-Every collection-backed widget takes a `dataset` and normalizes it, so you can
-hand it an array, a JSON string, or a WaveMaker Studio variable wrapper
-(`{ dataSet }`, `{ content }` or `{ data }`). An unresolved binding renders the
-widget's empty state rather than throwing.
+`dataset` accepts an array, a JSON string, or a Studio variable wrapper
+(`{ dataSet }`, `{ content }`, `{ data }`). The `*Field` props pick which columns
+to read:
 
 ```tsx
-<AvatarStack
-  dataset={teamVariable}
-  nameField="fullName"
-  imageField="avatar"
-  statusField="presence"
-/>
+<AvatarStack dataset={teamVariable} nameField="fullName" imageField="avatar" />
 ```
-
-The `*Field` props say which column of your rows to read, so rows rarely need
-reshaping before they are bound.
 
 ## Gestures
 
-`SwipeDeck` and `ReorderList` recognise pans and long-presses, so they need a
-`GestureHandlerRootView` above them — on web as well as on device:
+`SwipeDeck` and `ReorderList` need a `GestureHandlerRootView` above them, on web too:
 
 ```tsx
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 <GestureHandlerRootView style={{ flex: 1 }}>
   <SwipeDeck dataset={cards} onSwipeRight={accept} onSwipeLeft={reject} />
 </GestureHandlerRootView>
@@ -78,15 +52,16 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 ## The widgets
 
-| Widget | What it does | Key props |
-| --- | --- | --- |
-| `QrCode` | Vector QR symbol with an optional centered logo | `value`, `size`, `logoUrl`, `errorCorrection` |
-| `AvatarStack` | Overlapping avatars, presence dots, `+N` overflow | `dataset`, `maxVisible`, `overlap`, `showStatus` |
-| `SegmentProgress` | Multi-segment bar with per-segment rounded caps | `dataset`, `total`, `barHeight`, `gap` |
-| `SwipeDeck` | Card deck with pan physics and accept/reject | `dataset`, `swipeThreshold`, `onSwipeLeft/Right` |
-| `ReorderList` | Long-press and drag rows into a new order | `dataset`, `itemHeight`, `onReorder` |
-| `SignaturePad` | Freehand capture exported as a base64 PNG | `penColor`, `minWidth`/`maxWidth`, `onSignatureEnd` |
-| `SkiaEffect` | Blend modes and blur through a per-pixel canvas | `dataset`, `blurAmount`, `blendMode`, `spread` |
+| Widget | What it does |
+| --- | --- |
+| `QrCode` | Vector QR code with an optional center logo |
+| `AvatarStack` | Overlapping avatars with presence dots and `+N` overflow |
+| `SegmentProgress` | Multi-segment progress bar |
+| `SwipeDeck` | Card deck with swipe-to-accept and swipe-to-reject |
+| `ReorderList` | Drag rows into a new order |
+| `SignaturePad` | Freehand signature exported as a base64 PNG |
+| `SkiaEffect` | Blurred, blended color canvas |
+| `Maps` | Google Maps / Apple Maps with pins and routes |
 
-Open a widget in the sidebar for its full prop table and live controls, and see
+Open a widget in the sidebar for its props and live controls, and see
 **Platform Support** for what differs on web.

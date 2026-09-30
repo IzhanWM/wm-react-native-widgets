@@ -4,18 +4,11 @@ import meta from './meta';
 export default { ...meta, title: 'UI Widgets/Signature Pad', tags: ['autodocs'] };
 type Story = StoryObj<typeof meta>;
 
-/**
- * Default pad. Draw with a finger or the mouse.
- *
- * Storybook runs the **web** implementation: the native pad draws inside a
- * WebView, which `react-native-web` has no equivalent for, so `signaturepad.web.tsx`
- * captures pointer strokes and rasterizes them instead. Both return the same
- * base64 PNG, so a page never branches on platform.
- */
+/** Draw with a finger or the mouse. Every platform emits a base64 PNG. */
 export const Default: Story = {
   args: {},
   parameters: {
-    note: 'Draw here. On web this is the pointer-and-vector implementation; on device it is the WebView canvas. Both emit a base64 PNG.',
+    note: 'Draw here.',
     source: '<SignaturePad onSignatureEnd={(e) => upload(e.signature)} />',
   },
 };
@@ -35,7 +28,7 @@ export const ThickStroke: Story = {
     maxWidth: 9,
   },
   parameters: {
-    note: 'On device the stroke tapers between min and max with pointer speed; on web the two are averaged into one width.',
+    note: 'Web averages minWidth and maxWidth into one width.',
   },
 };
 

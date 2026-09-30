@@ -87,3 +87,22 @@ export const STUDIO_OUTLETS = {
     { name: 'Bad import', address: 'Garbled row', lat: 'n/a', lng: 'n/a' },
   ],
 };
+
+/** Profiles for SwipeDeck. Images come from a deterministic avatar service. */
+export const PROFILE_CARDS = [
+  { id: 1, title: 'Ada Lovelace', subtitle: 'Mathematician · first published algorithm', image: 'https://i.pravatar.cc/600?img=47' },
+  { id: 2, title: 'Grace Hopper', subtitle: 'Rear Admiral · first compiler', image: 'https://i.pravatar.cc/600?img=45' },
+  { id: 3, title: 'Alan Turing', subtitle: 'Logician · formalised computation', image: 'https://i.pravatar.cc/600?img=12' },
+  { id: 4, title: 'Katherine Johnson', subtitle: 'Orbital mechanics · Friendship 7', image: 'https://i.pravatar.cc/600?img=44' },
+  { id: 5, title: 'Edsger Dijkstra', subtitle: 'Shortest paths · structured programming', image: 'https://i.pravatar.cc/600?img=13' },
+];
+
+/** Release checklist for ReorderList. */
+export const RELEASE_TASKS = [
+  { id: 'a', label: 'Draft the release notes' },
+  { id: 'b', label: 'Cut the 1.1 branch' },
+  { id: 'c', label: 'Run the device matrix' },
+  { id: 'd', label: 'Update the Studio manifests' },
+  { id: 'e', label: 'Publish to npm' },
+  { id: 'f', label: 'Announce in #releases' },
+];

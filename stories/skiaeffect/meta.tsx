@@ -4,7 +4,7 @@ import { widgetDecorator } from '../widget-decorator';
 import { skiaEffectArgTypes } from './skiaeffect.args';
 
 export default {
-  title: 'UI Widgets/Skia Effect/Appearance',
+  title: 'UI Widgets/Blur Effect/Appearance',
   component: SkiaEffect,
   parameters: {
     layout: 'centered',

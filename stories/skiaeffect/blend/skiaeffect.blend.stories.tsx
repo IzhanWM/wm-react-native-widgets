@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react';
 import meta from '../meta';
 import { GLOW_BLOBS } from '../../sample-data';
 
-export default { ...meta, title: 'UI Widgets/Skia Effect/Blend' };
+export default { ...meta, title: 'UI Widgets/Blur Effect/Blend' };
 type Story = StoryObj<typeof meta>;
 
 const base = { dataset: GLOW_BLOBS, size: 240, backgroundColor: '#0B1020' };

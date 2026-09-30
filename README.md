@@ -158,11 +158,10 @@ npm run lint
 npm run typecheck
 ```
 
-Storybook runs every widget in the browser through `react-native-web`. Two
-widgets are **not** in Storybook: `SwipeDeck` and `ReorderList` sit on
-`react-native-reanimated` v4, which needs a worklets transform this Vite setup
-has no step to run. Verify those on a device, or in a Metro/webpack build that
-runs `babel-preset-expo`.
+Storybook runs every widget in the browser through `react-native-web`.
+`SwipeDeck` and `ReorderList` sit on `react-native-reanimated` v4 worklets, so
+`.storybook/main.ts` runs the `react-native-worklets` Babel plugin over them —
+see `spec/04-storybook-development.md`.
 
 ### Repository layout
 

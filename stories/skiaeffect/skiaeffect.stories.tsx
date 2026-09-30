@@ -6,23 +6,16 @@ import type { SkiaEffectProps } from '@components/skiaeffect';
 import meta from './meta';
 import { GLOW_BLOBS, SUNSET_BLOBS } from '../sample-data';
 
-export default { ...meta, title: 'UI Widgets/Skia Effect', tags: ['autodocs'] };
+export default { ...meta, title: 'UI Widgets/Blur Effect', tags: ['autodocs'] };
 type Story = StoryObj<typeof meta>;
 
-/**
- * Default effect: three blobs, screen-blended and blurred.
- *
- * Storybook runs the **web** implementation. Skia on web needs the CanvasKit
- * WASM bundle loaded by the host before first render, so `skiaeffect.web.tsx`
- * reproduces the composition with CSS `filter` and `mix-blend-mode` instead —
- * the Skia module never enters the web bundle.
- */
+/** Three blobs, screen-blended and blurred. */
 export const Default: Story = {
   args: {
     dataset: GLOW_BLOBS,
   },
   parameters: {
-    note: 'On iOS and Android this paints through Skia; here on web it is the CSS filter + mix-blend-mode equivalent, so no WASM is needed.',
+    note: 'Skia on device; CSS blur and blend modes on web.',
     source: '<SkiaEffect dataset={blobs} blendMode="screen" blurAmount={24} />',
   },
 };
@@ -58,7 +51,7 @@ export const OnDarkBackground: Story = {
     size: 260,
   },
   parameters: {
-    note: 'screen is additive, so it shows its character against a dark ground.',
+    note: 'screen is additive, so it shows best on a dark ground.',
   },
 };
 
@@ -294,7 +287,7 @@ const CreditCard = ({ look, initiallyRevealed = false }: { look: GlareLook; init
 };
 
 const note =
-  'Card number and CVV share the front of the card and sit blurred until revealed — tap the card or the button. While hidden only a same-length decoy is rendered, so the real digits never reach the DOM. The soft glare across the graphite face is a SkiaEffect — the controls restyle it live.';
+  'Tap the card to reveal the number and CVV. The glare is a SkiaEffect; the controls restyle it.';
 
 const source = `<SkiaEffect
   dataset={[{ color: '#9AA3AE' }, { color: '#5E6671' }, { color: '#C9CFD6' }]}
@@ -303,10 +296,7 @@ const source = `<SkiaEffect
   size={360}
 />`;
 
-/**
- * A payment card whose number and CVV sit blurred until revealed. The
- * `dataset`, `blurAmount` and `blendMode` controls restyle the Skia glare.
- */
+/** A payment card whose number and CVV stay blurred until revealed. */
 export const CreditCardPrivacy: Story = {
   name: 'Credit Card Privacy',
   // The card lays out its own canvas, so the geometry controls would do nothing.

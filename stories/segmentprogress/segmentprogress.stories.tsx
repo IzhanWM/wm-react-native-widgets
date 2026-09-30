@@ -45,6 +45,6 @@ export const EmptyDataset: Story = {
     total: 100,
   },
   parameters: {
-    note: 'With no rows and a fixed total the widget still paints its track, so the layout does not jump once data arrives.',
+    note: 'No rows: just the track.',
   },
 };

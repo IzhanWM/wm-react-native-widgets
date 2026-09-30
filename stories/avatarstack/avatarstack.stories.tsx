@@ -21,7 +21,7 @@ export const InitialsFallback: Story = {
     dataset: TEAM_MEMBERS_NO_IMAGES,
   },
   parameters: {
-    note: 'No imageUrl on any row, so every avatar renders its initial.',
+    note: 'No imageUrl on any row.',
   },
 };
 
@@ -39,7 +39,7 @@ export const EmptyDataset: Story = {
     dataset: [],
   },
   parameters: {
-    note: 'An empty dataset renders an empty row — the widget never throws on unbound data.',
+    note: 'No rows: an empty row, no error.',
   },
 };
 
@@ -49,6 +49,6 @@ export const JsonStringDataset: Story = {
     dataset: JSON.stringify(TEAM_MEMBERS.slice(0, 5)),
   },
   parameters: {
-    note: 'dataset is a JSON string here; toRows parses it before rendering.',
+    note: 'dataset is a JSON string here.',
   },
 };

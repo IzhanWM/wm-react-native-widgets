@@ -9,7 +9,7 @@ type Story = StoryObj<typeof meta>;
 export const SummedTotal: Story = {
   args: { dataset: STORAGE_SEGMENTS, total: 0 },
   parameters: {
-    note: 'Segments sum to 80 and total is 0, so the bar is treated as 100% full — use this for a pure breakdown.',
+    note: 'total is 0, so the bar always fills.',
   },
 };
 
@@ -17,7 +17,7 @@ export const SummedTotal: Story = {
 export const FixedTotal: Story = {
   args: { dataset: STORAGE_SEGMENTS, total: 128 },
   parameters: {
-    note: 'Segments sum to 80 of a 128 total, so 48 of capacity stays unfilled.',
+    note: '80 of 128 used.',
   },
 };
 

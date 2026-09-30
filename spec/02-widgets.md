@@ -69,10 +69,9 @@ Known differences, documented in the props JSDoc and the manifests:
 
 `SwipeDeck` and `ReorderList` require a `GestureHandlerRootView` above them on
 every platform, including web. Both also sit on `react-native-reanimated` v4,
-which needs a Babel/SWC worklets transform this repo's Vite-based Storybook has
-no step to run, so their stories are excluded from Storybook rather than shown
-broken — exercise them on iOS/Android, or in a web build that runs Babel with
-`babel-preset-expo` (Metro or webpack configured the same way).
+whose worklets need the `react-native-worklets` Babel plugin. Metro and webpack
+with `babel-preset-expo` run it; this repo's Vite Storybook runs it itself on
+just those sources (see `spec/04-storybook-development.md`).
 
 ## WMX widgets
 

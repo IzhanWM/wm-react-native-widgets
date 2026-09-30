@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react';
 import meta from '../meta';
 import { GLOW_BLOBS, SUNSET_BLOBS } from '../../sample-data';
 
-export default { ...meta, title: 'UI Widgets/Skia Effect/Appearance' };
+export default { ...meta, title: 'UI Widgets/Blur Effect/Appearance' };
 type Story = StoryObj<typeof meta>;
 
 /** No blur leaves hard-edged circles, which makes the geometry easy to read. */

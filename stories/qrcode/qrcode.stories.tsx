@@ -27,6 +27,6 @@ export const EmptyValue: Story = {
     value: '',
   },
   parameters: {
-    note: 'An empty value falls back to a single space, so the widget renders a valid symbol rather than erroring.',
+    note: 'An empty value is encoded as a single space.',
   },
 };

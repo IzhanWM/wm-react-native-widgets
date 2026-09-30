@@ -53,10 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * The imperative handle — `clear`, `readSignature` and `isEmpty` — is identical
- * on native and web, and the captured PNG is previewed back below the pad.
- */
+/** The `ref` handle (`clear`, `readSignature`, `isEmpty`), with the exported PNG shown below. */
 export const HandleAndExport: Story = {
   render: () => {
     const padRef = useRef<SignaturePadHandle>(null);
@@ -93,6 +90,6 @@ export const HandleAndExport: Story = {
   },
   parameters: {
     layout: 'centered',
-    note: 'The preview below is the exported PNG rendered back — proof the web fallback honours the same contract as the device canvas.',
+    note: 'The preview below is the exported PNG.',
   },
 };

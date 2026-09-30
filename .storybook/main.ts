@@ -1,11 +1,34 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from '@storybook/react-vite';
+import { transformAsync } from '@babel/core';
 import { mergeConfig, transformWithEsbuild } from 'vite';
 import path, { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * Code that declares Reanimated worklets: the two gesture widgets, and the libraries under
+ * them. Reanimated v4 worklets only work once the worklets Babel plugin has run over the code
+ * that declares them, Reanimated's own included. Metro does that through babel-preset-expo;
+ * Vite has no Babel step, so both passes below run it on just these files.
+ */
+const WORKLET_SOURCES =
+  /(components\/(swipedeck|reorderlist)\/[^/]+\.tsx?|node_modules\/(react-native-reanimated|react-native-worklets|react-native-reorderable-list)\/.+\.[jt]sx?)$/;
+
+const workletize = async (code: string, file: string) => {
+  const result = await transformAsync(code, {
+    filename: file,
+    babelrc: false,
+    configFile: false,
+    sourceMaps: true,
+    parserOpts: { plugins: ['jsx', 'typescript'] },
+    plugins: ['react-native-worklets/plugin'],
+  });
+  return result?.code ? result : null;
+};
 
 const config: StorybookConfig = {
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -59,6 +82,20 @@ const config: StorybookConfig = {
           resolveExtensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.js', '.jsx', '.ts', '.tsx'],
           // react-native-qrcode-svg (and similar RN packages) ship JSX in .js files.
           loader: { '.js': 'jsx' },
+          plugins: [
+            {
+              // Dev pre-bundling bypasses Vite plugins, so worklet sources get the pass here.
+              name: 'reanimated-worklets',
+              setup(build) {
+                build.onLoad({ filter: WORKLET_SOURCES }, async ({ path: file }) => {
+                  const result = await workletize(await readFile(file, 'utf8'), file);
+                  // Babel leaves types in place, so TypeScript sources stay on the tsx loader.
+                  const loader = /\.tsx?$/.test(file) ? 'tsx' : 'jsx';
+                  return result ? { contents: result.code!, loader } : undefined;
+                });
+              },
+            },
+          ],
         },
       },
       build: {
@@ -85,6 +122,17 @@ const config: StorybookConfig = {
           async transform(code: string, id: string) {
             if (!/node_modules\/react-native-qrcode-svg\/.*\.js$/.test(id)) return null;
             return transformWithEsbuild(code, id, { loader: 'jsx', jsx: 'automatic' });
+          },
+        },
+        {
+          // Worklet sources Vite serves itself (our components in dev, everything in a build).
+          name: 'reanimated-worklets',
+          enforce: 'pre',
+          async transform(code: string, id: string) {
+            const file = id.split('?')[0]; // Vite appends ?v=<hash> to node_modules files
+            if (!WORKLET_SOURCES.test(file)) return null;
+            const result = await workletize(code, file);
+            return result ? { code: result.code!, map: result.map } : null;
           },
         },
         {

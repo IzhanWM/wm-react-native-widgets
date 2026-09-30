@@ -128,7 +128,6 @@ function run() {
   log('Wrote package.json (name=%s, version=%s)', pkg.name, pkg.version);
 
   copyOptional('README.md');
-  copyOptional('MAPS.md');
   copyOptional('LICENSE');
   writeNpmIgnore();
 

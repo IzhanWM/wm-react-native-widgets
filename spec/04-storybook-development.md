@@ -48,12 +48,17 @@ note and copy-paste source snippet) and `stories/sample-data.ts` (fixtures).
 Introduction pages live in `stories/introduction/*.mdx`, plus
 `stories/platform-support.mdx`, which renders `stories/platform-support.md`.
 
-### Widgets not in Storybook
+### Reanimated worklets
 
-`SwipeDeck` and `ReorderList` need a Reanimated v4 worklets transform this Vite
-setup has no step to run, so they have no stories. Verify them on a device or in
-a Metro/webpack build that runs `babel-preset-expo`. Their props are still
-documented in `wmx/<widget>/wmx.json` and their `.props.ts` JSDoc.
+`SwipeDeck` and `ReorderList` use Reanimated v4 worklets, which only work after
+the `react-native-worklets/plugin` Babel pass. Vite has no Babel step, so
+`.storybook/main.ts` runs it twice over the same `WORKLET_SOURCES` pattern: an
+esbuild plugin for dev dependency pre-bundling, and a Vite `transform` for files
+Vite serves itself (and for `storybook build`). A new widget that declares
+worklets must be added to that pattern. `react-native-worklets` must stay at 0.6
+or later; 0.5.x throws on web without the plugin in every file. After changing
+either, restart with `npm run storybook:clean`. Stories need a
+`GestureHandlerRootView` decorator (see `stories/swipedeck/meta.tsx`).
 
 ## Commands
 
@@ -105,7 +110,7 @@ For non-trivial features or bugs:
 3. Record verification: commands run + the Storybook story id/path.
 
 A change without a story is incomplete unless the task exempts it (typos,
-spec-only docs, or a widget that has no stories by design).
+or spec-only docs).
 
 ## Agent verification checklist
 
