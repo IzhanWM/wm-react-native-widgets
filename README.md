@@ -1,7 +1,8 @@
 # @wavemaker/react-native-widgets
 
 React Native UI widgets — QR code, avatar stack, segment
-progress, swipe deck, reorder list, signature pad, maps and Skia effects — all on
+progress, swipe deck, reorder list, signature pad, maps, Skia effects and a
+server-driven view that renders JSON-described screens — all on
 **iOS, Android and web**, behind one public contract per widget.
 
 - **Live Storybook:** https://izhanwm.github.io/wm-react-native-widgets
@@ -15,7 +16,7 @@ npm install @wavemaker/react-native-widgets
 npm install react-native-svg react-native-gesture-handler react-native-reanimated
 ```
 
-Five widgets come off the package root:
+Six widgets come off the package root:
 
 ```tsx
 import { QrCode, AvatarStack, SegmentProgress } from '@wavemaker/react-native-widgets';
@@ -89,6 +90,12 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
       <b>Maps</b>
     </td>
   </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/serverdrivenview/assets/images/thumbnail.png" width="840" alt="Server Driven View rendering three different department-store section screens from JSON specs" /><br />
+      <b>Server Driven View</b>
+    </td>
+  </tr>
 </table>
 
 | Widget | Description | iOS / Android | Web |
@@ -101,6 +108,7 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 | **Signature Pad** | Freehand capture exported as a base64 PNG | ✅ | ✅ |
 | **Skia Effect** | Blend modes and blur through a per-pixel canvas | ✅ | ✅ |
 | **Maps** | Google/Apple map with pins, routes and user location | ✅ | ✅ |
+| **Server Driven View** | Renders a JSON-described screen bound to Studio variables | ✅ | ✅ |
 
 Three widgets could not reach web through their native library, so each ships a
 **separate web implementation** behind the same public contract — selected by
@@ -143,6 +151,48 @@ throwing. `*Field` props say which column to read, so rows rarely need reshaping
 ```tsx
 <AvatarStack dataset={teamVariable} nameField="fullName" imageField="avatar" />
 ```
+
+---
+
+## Server-driven screens
+
+`ServerDrivenView` renders a screen described in JSON, in the format of Vercel's
+[json-render](https://github.com/vercel-labs/json-render), through a fixed catalog
+of React Native components. Bind `spec` to a variable and one build of the app
+can show each user, role or store section its own UI — a department store's
+associate app, say, serving an expiry sweep to Grocery and a price-tag check to
+Electronics.
+
+```tsx
+import { ServerDrivenView } from '@wavemaker/react-native-widgets/serverdrivenview';
+
+<ServerDrivenView
+  spec={sectionScreen}                       // { root, elements } — from the backend
+  data={{ section, items: aisleVariable }}   // read in the spec with { "$data": "/items" }
+  onAction={(event) => {                     // custom actions: invoke a variable, navigate
+    if (event.action === 'submitSweep') saveSweep(event.params);
+  }}
+/>
+```
+
+```json
+{
+  "root": "card",
+  "elements": {
+    "card": { "type": "Card", "props": { "title": { "$data": "/section/name" } }, "children": ["rows"] },
+    "rows": { "type": "Column", "repeat": { "dataPath": "/items", "key": "sku" }, "children": ["row"] },
+    "row":  { "type": "ListItem", "props": { "title": { "$item": "name" } },
+              "on": { "press": { "action": "openItem", "params": { "sku": { "$item": "sku" } } } } }
+  }
+}
+```
+
+Props read bound variables (`$data`) and local state (`$state`); inputs write
+state back (`$bindState`, `$bindItem`); `visible`, `$cond` and `repeat` cover
+conditionals and lists; built-in actions (`setState`, `pushState`,
+`removeState`, …) handle local state. Only catalog types render, so a served
+spec cannot reach arbitrary components. Full reference:
+[`spec/05-server-driven-view.md`](spec/05-server-driven-view.md).
 
 ---
 

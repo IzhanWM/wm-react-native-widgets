@@ -1,6 +1,6 @@
 # 01 — Overview
 
-`@wavemaker/react-native-widgets` is a library of seven standalone React Native
+`@wavemaker/react-native-widgets` is a library of nine standalone React Native
 UI widgets that render on **iOS, Android and web**. 
 
 Each widget is published as a flat subpath of one package
@@ -57,7 +57,7 @@ spec/                         # this documentation
 
 ## Versioning
 
-One version line for all seven widgets, sourced from the root `package.json`.
+One version line for all nine widgets, sourced from the root `package.json`.
 Each `wmx/<widget>/wmx.json` pins the same version in its
 `dependencies['@wavemaker/react-native-widgets']` — bump both, then regenerate
 the WMX zips.

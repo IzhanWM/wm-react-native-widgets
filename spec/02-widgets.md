@@ -9,6 +9,7 @@
 | `ReorderList` | `reorderlist/` | `react-native-reorderable-list` |
 | `SignaturePad` | `signaturepad/` | WebView canvas (native) / SVG + canvas (web) |
 | `SkiaEffect` | `skiaeffect/` | `@shopify/react-native-skia` / CSS (web) |
+| `ServerDrivenView` | `serverdrivenview/` | Core React Native views, plus `QrCode`, `AvatarStack`, `SegmentProgress` — see `05-server-driven-view.md` |
 | `Maps` | `maps/` | `react-native-maps` — Google Maps (Android) / Apple Maps or Google Maps (iOS), `expo-location` for the location permission / `@vis.gl/react-google-maps` (web) |
 
 ## Folder convention
@@ -42,7 +43,7 @@ widget funnels its `dataset` prop through it.
 
 ## Platform strategy
 
-Five widgets are one implementation on all three platforms. Three are not, and all
+Six widgets are one implementation on all three platforms. Three are not, and all
 three use **platform file extensions** rather than a runtime `Platform.OS` branch —
 the bundler picks the file, so the platform-specific dependency never enters the
 other bundle at all.

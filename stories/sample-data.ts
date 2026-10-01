@@ -106,3 +106,27 @@ export const RELEASE_TASKS = [
   { id: 'e', label: 'Publish to npm' },
   { id: 'f', label: 'Announce in #releases' },
 ];
+
+/**
+ * Variables for ServerDrivenView, shaped as a Studio page binds them: a model
+ * variable for the signed-in user, and a live variable whose rows arrive
+ * wrapped in `dataSet`.
+ */
+export const CURRENT_USER = {
+  firstName: 'Ava',
+  lastName: 'Johnson',
+  email: 'ava.johnson@example.com',
+  avatar: 'https://i.pravatar.cc/150?img=1',
+  tier: 'gold',
+  points: 1840,
+  nextTierPoints: 2500,
+  newsletter: true,
+};
+
+export const RECENT_ORDERS = {
+  dataSet: [
+    { id: 'SO-1042', item: 'Noise-cancelling headphones', total: 249, status: 'shipped', image: 'https://picsum.photos/seed/headphones/80' },
+    { id: 'SO-1039', item: 'Mechanical keyboard', total: 129, status: 'delivered', image: 'https://picsum.photos/seed/keyboard/80' },
+    { id: 'SO-1031', item: 'USB-C dock', total: 89, status: 'processing', image: 'https://picsum.photos/seed/dock/80' },
+  ],
+};

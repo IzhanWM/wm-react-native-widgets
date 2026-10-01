@@ -1,6 +1,6 @@
 # Getting started
 
-Standalone widgets for WaveMaker mobile apps. All eight run on **iOS, Android and web.**
+Standalone widgets for WaveMaker mobile apps. All nine run on **iOS, Android and web.**
 
 ## Install
 
@@ -40,6 +40,21 @@ to read:
 <AvatarStack dataset={teamVariable} nameField="fullName" imageField="avatar" />
 ```
 
+## Server-driven screens
+
+`ServerDrivenView` renders a screen from a JSON spec (json-render's format), so
+the backend can serve each user, role or store section its own UI:
+
+```tsx
+import { ServerDrivenView } from '@wavemaker/react-native-widgets/serverdrivenview';
+
+<ServerDrivenView
+  spec={Variables.sectionScreen.dataSet}
+  data={{ section: Variables.section.dataSet, items: Variables.aisleItems }}
+  onAction={handleAction}
+/>
+```
+
 ## Gestures
 
 `SwipeDeck` and `ReorderList` need a `GestureHandlerRootView` above them, on web too:
@@ -62,6 +77,7 @@ to read:
 | `SignaturePad` | Freehand signature exported as a base64 PNG |
 | `SkiaEffect` | Blurred, blended color canvas |
 | `Maps` | Google Maps / Apple Maps with pins and routes |
+| `ServerDrivenView` | Renders a JSON-described screen bound to Studio variables |
 
 Open a widget in the sidebar for its props and live controls, and see
 **Platform Support** for what differs on web.

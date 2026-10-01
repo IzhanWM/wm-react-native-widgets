@@ -1,0 +1,94 @@
+{
+  "name": "WMUIServerDrivenView",
+  "version": "1.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wavemaker/wm-react-native-widgets"
+  },
+  "homepage": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-server-driven-view-use-cases--department-store",
+  "displayName": "Server Driven View",
+  "description": "Renders a screen described in JSON, in the format of Vercel's json-render, through a fixed catalog of React Native components. Bind the spec to a variable to serve each user, role or store section its own UI without shipping a new build. Props read bound variables with $data, inputs write local state with $bindState, and buttons fire custom actions the page handles in On Action.",
+  "iconUrl": "icon.svg",
+  "dependencies": {
+    "@wavemaker/react-native-widgets": "1.1.0"
+  },
+  "keywords": [
+    "server-driven-ui",
+    "sdui",
+    "json",
+    "json-render",
+    "dynamic",
+    "spec",
+    "renderer",
+    "remote-ui",
+    "form",
+    "ui-widgets/serverdrivenview"
+  ],
+  "props": {
+    "spec": {
+      "name": "spec",
+      "displayName": "Spec",
+      "description": "The screen to render: { root, elements } with each element { type, props, children, visible, on, repeat }, a nested { type, props, children } tree, or either as a JSON string. Bind it to a variable whose dataSet is the spec, e.g. a service variable that returns the screen for the user's section. Example: {root: 'title', elements: {title: {type: 'Heading', props: {text: {$data: '/user/name'}}}}}",
+      "type": "object",
+      "isList": false,
+      "isRequired": true
+    },
+    "data": {
+      "name": "data",
+      "displayName": "Data",
+      "description": "Variables the spec reads with {$data: '/path'} — a variable's dataSet, or an object combining several, e.g. {user: Variables.user.dataSet, orders: Variables.orders}. Read-only from the spec; changes re-render live, and spec state seeded from $data fills in when the variable loads.",
+      "type": "object",
+      "isList": false,
+      "isRequired": false
+    },
+    "accentColor": {
+      "name": "accentColor",
+      "displayName": "Accent Color",
+      "description": "Primary color of the built-in buttons, switches, checkboxes, steppers and progress bars. Default: #2563EB",
+      "type": "string",
+      "widget": "color",
+      "defaultValue": "#2563EB",
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "events": {
+    "onAction": {
+      "name": "onAction",
+      "displayName": "On Action",
+      "description": "Fires when an element runs a custom action, e.g. on: {press: {action: 'submitSweep', params: {...}}}. The event carries action, params (resolved), item and index (inside a repeat), elementKey and the local state. Switch on event.action and invoke only the variables you expect.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    },
+    "onStateChange": {
+      "name": "onStateChange",
+      "displayName": "On State Change",
+      "description": "Fires after every write to local state — an input edit, a setState, pushState or removeState action — with statePath, value and the whole state. Use it to copy edits back into a variable.",
+      "type": "function",
+      "params": [
+        "event"
+      ],
+      "isList": false,
+      "isRequired": false
+    }
+  },
+  "group": "ui-widgets/serverdrivenview",
+  "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/grocery-section.png",
+      "/assets/images/electronics-section.png",
+      "/assets/images/apparel-section.png",
+      "/assets/images/bound-variables.png",
+      "/assets/images/two-way-form.png"
+    ],
+    "thumbnailImage": "/assets/images/thumbnail.png",
+    "icon": "icon.svg",
+    "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-server-driven-view-use-cases--department-store"
+  },
+  "webSupport": true
+}

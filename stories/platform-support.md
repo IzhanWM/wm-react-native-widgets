@@ -16,6 +16,7 @@ strategy each one uses and what, if anything, differs on web.
 | **Signature Pad** | WebView canvas (native) | ✅ | ✅ | **Separate web implementation.** |
 | **Skia Effect** | `@shopify/react-native-skia` | ✅ | ✅ | **Separate web implementation.** |
 | **Maps** | `react-native-maps` → Google Maps / Apple Maps | ✅ | ✅ | **Separate web implementation** on the Google Maps JavaScript API. Needs a web key. |
+| **Server Driven View** | Core React Native views | ✅ | ✅ | One implementation. Its catalog leaves out the gesture-root and optional-peer widgets. |
 
 A separate web implementation keeps the same props, events and payloads, so a
 page never branches on platform.
