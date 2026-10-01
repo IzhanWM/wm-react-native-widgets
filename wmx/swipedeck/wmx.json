@@ -171,7 +171,7 @@
     }
   },
   "group": "ui-widgets/swipedeck",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/deck.png",
       "/assets/images/dragging.png",

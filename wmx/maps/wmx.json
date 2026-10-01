@@ -329,7 +329,7 @@
     }
   },
   "group": "ui-widgets/maps",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/markers.png",
       "/assets/images/custommarker.png",
