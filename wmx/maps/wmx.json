@@ -330,6 +330,12 @@
   },
   "group": "ui-widgets/maps",
   "marketplace_unsupported": {
+    "carouselImages": [
+      "/assets/images/markers.png",
+      "/assets/images/custommarker.png",
+      "/assets/images/area.png",
+      "/assets/images/routes.png"
+    ],
     "thumbnailImage": "/assets/images/thumbnail.png",
     "icon": "icon.svg",
     "previewUrl": "https://wavemaker.github.io/wm-react-native-widgets/?path=/story/ui-widgets-maps--default"
