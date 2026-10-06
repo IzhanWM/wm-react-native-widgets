@@ -4,7 +4,7 @@ React Native UI widgets — QR code, avatar stack, segment
 progress, swipe deck, reorder list, signature pad, maps and Skia effects — all on
 **iOS, Android and web**, behind one public contract per widget.
 
-- **Live Storybook:** https://izhanwm.github.io/wm-react-native-widgets
+- **Live Storybook:** https://wavemaker.github.io/wm-react-native-widgets
 
 ---
 
@@ -51,41 +51,41 @@ import { QrCode } from '@wavemaker/react-native-widgets/qrcode';
 <table>
   <tr>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/qrcode/assets/images/thumbnail.png" width="420" alt="QR Code widget rendering a vector QR symbol" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/qrcode/assets/images/thumbnail.png" width="420" alt="QR Code widget rendering a vector QR symbol" /><br />
       <b>QR Code</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/avatarstack/assets/images/thumbnail.png" width="420" alt="Avatar Stack widget with overlapping avatars and a +N overflow badge" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/avatarstack/assets/images/thumbnail.png" width="420" alt="Avatar Stack widget with overlapping avatars and a +N overflow badge" /><br />
       <b>Avatar Stack</b>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/segmentprogress/assets/images/thumbnail.png" width="420" alt="Segment Progress widget showing a multi-segment bar" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/segmentprogress/assets/images/thumbnail.png" width="420" alt="Segment Progress widget showing a multi-segment bar" /><br />
       <b>Segment Progress</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/swipedeck/assets/images/thumbnail.png" width="420" alt="Swipe Deck widget showing a stack of swipeable cards" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/swipedeck/assets/images/thumbnail.png" width="420" alt="Swipe Deck widget showing a stack of swipeable cards" /><br />
       <b>Swipe Deck</b>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/reorderlist/assets/images/thumbnail.png" width="420" alt="Reorder List widget with a row lifted mid-drag" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/reorderlist/assets/images/thumbnail.png" width="420" alt="Reorder List widget with a row lifted mid-drag" /><br />
       <b>Reorder List</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/signaturepad/assets/images/thumbnail.png" width="420" alt="Signature Pad widget with a freehand signature captured on the canvas" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/signaturepad/assets/images/thumbnail.png" width="420" alt="Signature Pad widget with a freehand signature captured on the canvas" /><br />
       <b>Signature Pad</b>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/skiaeffect/assets/images/thumbnail.png" width="420" alt="Skia Effect widget showing a blurred, blended color canvas" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/skiaeffect/assets/images/thumbnail.png" width="420" alt="Skia Effect widget showing a blurred, blended color canvas" /><br />
       <b>Skia Effect</b>
     </td>
     <td width="50%" align="center">
-      <img src="https://raw.githubusercontent.com/IzhanWM/wm-react-native-widgets/main/wmx/maps/assets/images/thumbnail.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
+      <img src="https://raw.githubusercontent.com/wavemaker/wm-react-native-widgets/main/wmx/maps/assets/images/thumbnail.png" width="420" alt="Maps widget showing a city map with category pins" /><br />
       <b>Maps</b>
     </td>
   </tr>
@@ -204,8 +204,8 @@ running Expo web build — see the header of `scripts/generate-widget-images.js`
 ## Maintainers
 
 Maintained by [WaveMaker](https://www.wavemaker.com/). Source:
-[wavemaker/wm-react-native-widgets](https://github.com/IzhanWM/wm-react-native-widgets).
-Use [GitHub Issues](https://github.com/IzhanWM/wm-react-native-widgets/issues)
+[wavemaker/wm-react-native-widgets](https://github.com/wavemaker/wm-react-native-widgets).
+Use [GitHub Issues](https://github.com/wavemaker/wm-react-native-widgets/issues)
 for bug reports and feature requests.
 
 ---

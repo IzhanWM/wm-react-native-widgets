@@ -111,7 +111,7 @@
     }
   },
   "group": "ui-widgets/qrcode",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/default.png",
       "/assets/images/branded-colors.png",

@@ -6,7 +6,7 @@
   "main": "components/index.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IzhanWM/wm-react-native-widgets.git"
+    "url": "https://github.com/wavemaker/wm-react-native-widgets.git"
   },
   "homepage": "https://wavemaker.github.io/wm-react-native-widgets",
   "keywords": [

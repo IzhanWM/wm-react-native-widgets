@@ -121,7 +121,7 @@
     }
   },
   "group": "ui-widgets/segmentprogress",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/summed-total.png",
       "/assets/images/fixed-total.png",

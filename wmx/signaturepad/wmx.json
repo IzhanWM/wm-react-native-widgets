@@ -89,7 +89,7 @@
     }
   },
   "group": "ui-widgets/signaturepad",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/empty-pad.png",
       "/assets/images/signed.png",

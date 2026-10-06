@@ -121,7 +121,7 @@
     }
   },
   "group": "ui-widgets/avatarstack",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/default.png",
       "/assets/images/large-overlap.png",

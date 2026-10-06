@@ -127,7 +127,7 @@
     }
   },
   "group": "ui-widgets/reorderlist",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/rows.png",
       "/assets/images/dragging.png",
