@@ -77,7 +77,7 @@ just those sources (see `spec/04-storybook-development.md`).
 
 `wmx/<name>/` carries `wmx.json`, a thin `index.tsx`, and `icon.svg` — a flat
 manifest the generator discovers by walking for `wmx.json`. Studio names are
-prefixed `WMUI` (`WMUIQrCode`, `WMUISwipeDeck`, …); zips land in
+prefixed `RNW` (`RNWQrCode`, `RNWSwipeDeck`, …); zips land in
 `dist/wmx/widgets/`.
 
 Icons are 24×24 viewBox, `#bfbfbf` strokes, transparent background. Marketplace
