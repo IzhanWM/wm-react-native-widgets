@@ -11,7 +11,7 @@
   "description": "Card deck with pan physics and a stacked rest state. Drag the top card past the threshold to accept or reject it. Built directly on Gesture Handler and Reanimated, both of which support web, so the deck runs on iOS, Android and web. The page must sit inside a GestureHandlerRootView.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "react-native-gesture-handler": "2.28.0",
     "react-native-reanimated": "4.1.1"
   },
