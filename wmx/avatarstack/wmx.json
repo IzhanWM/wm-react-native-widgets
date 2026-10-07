@@ -11,7 +11,7 @@
   "description": "Overlapping circular avatars with per-avatar status dots and a +N overflow bubble. Built from plain views and negative margins, so it needs no drawing library and runs everywhere.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0"
+    "@wavemaker/react-native-widgets": "1.0.1"
   },
   "keywords": [
     "avatar",

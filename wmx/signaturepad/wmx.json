@@ -11,7 +11,7 @@
   "description": "Freehand signature capture. The user draws with a finger or pointer; each stroke hands back a base64 PNG the page can upload. On iOS and Android this draws through a WebView canvas; web has no WebView, so it ships a separate pointer-and-vector implementation that returns the same base64 PNG. Stroke width varies with speed on device and is fixed on web.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "react-native-svg": "15.12.1",
     "react-native-webview": "13.16.0"
   },

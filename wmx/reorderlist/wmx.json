@@ -11,7 +11,7 @@
   "description": "Drag-to-reorder list. Long-press a row to lift it, drag to a new position, and the reordered list is handed back to the page. The underlying library is pure JavaScript over Reanimated and Gesture Handler, so it also runs on web; upstream tests iOS and Android only, so keep a non-drag path for web users.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "react-native-gesture-handler": "2.28.0",
     "react-native-reanimated": "4.1.1"
   },
