@@ -25,6 +25,8 @@ export interface Scope {
   data: unknown;
   /** Local UI state. */
   state: Record<string, unknown>;
+  /** API operation results, by operation name. */
+  api?: Record<string, unknown>;
   /** Current repeat row. */
   item?: unknown;
   /** Current repeat index. */
@@ -188,12 +190,14 @@ function flatten(node: unknown, elements: Record<string, ServerDrivenElement>, f
 const NO_EXPRESSION = Symbol('no-expression');
 
 /** Keys that turn an object into a value read; checked in this order. */
-const SOURCE_KEYS = ['$data', '$state', '$bindState', '$item', '$bindItem', '$index', '$event'] as const;
+const SOURCE_KEYS = ['$data', '$api', '$state', '$bindState', '$item', '$bindItem', '$index', '$event'] as const;
 
 function readSource(key: (typeof SOURCE_KEYS)[number], ref: unknown, scope: Scope): unknown {
   switch (key) {
     case '$data':
       return getIn(scope.data, parsePath(ref));
+    case '$api':
+      return getIn(scope.api, parsePath(ref));
     case '$state':
     case '$bindState':
       return getIn(scope.state, parsePath(ref));
@@ -234,7 +238,7 @@ export function resolveValue(value: unknown, scope: Scope): any {
 const TEMPLATE_REF = /\$\{([^}]*)\}/g;
 
 /**
- * `${/path}` reads local state, as in json-render. `${$data/path}`,
+ * `${/path}` reads local state, as in json-render. `${$data/path}`, `${$api/op/data}`,
  * `${$item/field}`, `${$index}` and `${$event/field}` read the other sources;
  * dotted paths work after any prefix (`${$data.user.name}`).
  */
@@ -244,6 +248,7 @@ function interpolate(template: string, scope: Scope): string {
     let value: unknown;
     if (ref.startsWith('$index')) value = scope.index;
     else if (ref.startsWith('$data')) value = getIn(scope.data, parsePath(ref.slice(5)));
+    else if (ref.startsWith('$api')) value = getIn(scope.api, parsePath(ref.slice(4)));
     else if (ref.startsWith('$item')) value = getIn(scope.item, parsePath(ref.slice(5)));
     else if (ref.startsWith('$event')) value = getIn(scope.event, parsePath(ref.slice(6)));
     else if (ref.startsWith('$state')) value = getIn(scope.state, parsePath(ref.slice(6)));
@@ -329,6 +334,9 @@ export function repeatRows(repeat: ServerDrivenElement['repeat'], scope: Scope):
   }
   if (repeat.dataPath != null) {
     return { rows: toRows(getIn(scope.data, parsePath(repeat.dataPath))) };
+  }
+  if (repeat.apiPath != null) {
+    return { rows: toRows(getIn(scope.api, parsePath(repeat.apiPath))) };
   }
   if (repeat.itemPath != null) {
     // A list inside the current row stays writable when that row lives in state.

@@ -11,6 +11,7 @@ conventions, and where to change behavior. They are **not** automated tests.
 3. [03-build-wmx-publish.md](./03-build-wmx-publish.md) — npm and WMX packaging.
 4. [04-storybook-development.md](./04-storybook-development.md) — stories, commands, verification.
 5. [05-server-driven-view.md](./05-server-driven-view.md) — the JSON spec format, state, actions, Studio wiring.
+6. [06-server-driven-view-theme-and-api.md](./06-server-driven-view-theme-and-api.md) — the style spec (`theme`) and API schema (`api`).
 
 ## File index
 
@@ -21,6 +22,7 @@ conventions, and where to change behavior. They are **not** automated tests.
 | [03-build-wmx-publish.md](./03-build-wmx-publish.md) | `build:lib`, WMX zips, npm | ≤200 |
 | [04-storybook-development.md](./04-storybook-development.md) | Stories, commands, verification | ≤200 |
 | [05-server-driven-view.md](./05-server-driven-view.md) | Spec format, expressions, actions, catalog, Studio wiring | ≤200 |
+| [06-server-driven-view-theme-and-api.md](./06-server-driven-view-theme-and-api.md) | Style spec, modes, API schema, `$api`, onSuccess/onError | ≤200 |
 
 ## Constraints for agents
 

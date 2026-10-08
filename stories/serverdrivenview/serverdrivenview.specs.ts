@@ -2,7 +2,12 @@
  * UI specs the ServerDrivenView stories render. Each is plain JSON — the same
  * value a Studio page would bind from a variable or receive from a backend.
  */
-import type { ServerDrivenNestedSpec, ServerDrivenSpec } from '@components/serverdrivenview';
+import type {
+  ServerDrivenApiSchema,
+  ServerDrivenNestedSpec,
+  ServerDrivenSpec,
+  ServerDrivenStyleSpec,
+} from '@components/serverdrivenview';
 
 /**
  * Account screen bound to two variables: `data.user` (a model variable) and
@@ -164,7 +169,7 @@ export const TODO_SPEC: ServerDrivenSpec = {
     },
     remove: {
       type: 'Button',
-      props: { label: 'Remove', variant: 'ghost', color: '#DC2626' },
+      props: { label: 'Remove', variant: 'ghost', color: 'error' },
       on: { press: { action: 'removeState', params: { statePath: '/todos', index: { $index: true } } } },
     },
     empty: { type: 'Text', props: { variant: 'caption', text: 'Nothing left to do.' }, visible: { $state: '/todos', not: true } },
@@ -226,8 +231,8 @@ export const GALLERY_SPEC: ServerDrivenNestedSpec = {
         props: { wrap: true },
         children: [
           { type: 'Badge', props: { text: 'Badge' } },
-          { type: 'Badge', props: { text: 'Success', color: '#15803D' } },
-          { type: 'Badge', props: { text: 'Muted', color: '#E5E7EB', textColor: '#374151' } },
+          { type: 'Badge', props: { text: 'Success', color: 'success' } },
+          { type: 'Badge', props: { text: 'Muted', color: 'secondary', textColor: 'onSecondary' } },
         ],
       },
       {
@@ -262,7 +267,7 @@ export const GALLERY_SPEC: ServerDrivenNestedSpec = {
         props: { horizontal: true, gap: 8 },
         children: [1, 2, 3, 4, 5, 6].map((n) => ({
           type: 'View',
-          props: { width: 72, height: 48, radius: 8, background: '#DBEAFE', align: 'center', justify: 'center' },
+          props: { width: 72, height: 48, radius: 8, background: 'surfaceVariant', align: 'center', justify: 'center' },
           children: [{ type: 'Text', props: { text: `Scroll ${n}`, variant: 'caption' } }],
         })),
       },
@@ -286,6 +291,155 @@ export const WIDGETS_SPEC: ServerDrivenNestedSpec = {
       { type: 'SegmentProgress', props: { dataset: { $data: '/storage' }, total: 128 } },
       { type: 'Text', props: { variant: 'label', text: 'QrCode' } },
       { type: 'QrCode', props: { value: { $data: '/shareUrl' }, size: 120 } },
+    ],
+  },
+};
+
+/** A style spec: a palette, roles that name it, rounder shapes and a `price` class. */
+export const TEAL_THEME: ServerDrivenStyleSpec = {
+  colors: { teal: '#0E7C86', sand: '#F6F1E9', primary: 'teal', surface: '#FFFDF9', surfaceVariant: 'sand', border: '#E8DFD0' },
+  radii: { md: 14, lg: 20 },
+  typography: { title: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 } },
+  components: {
+    Button: { style: { borderRadius: 'pill', paddingHorizontal: 22 }, labelStyle: { letterSpacing: 0.3 } },
+    Card: { style: { borderWidth: 0, backgroundColor: 'surfaceVariant' } },
+  },
+  classes: { price: { fontSize: 18, fontWeight: '700', color: 'primary' } },
+};
+
+/** Products from a REST API: `listProducts` loads on mount and refetches as the search changes. */
+export const PRODUCTS_API: ServerDrivenApiSchema = {
+  baseUrl: 'https://demo.store.api',
+  headers: { Authorization: { $template: 'Bearer ${$data/session/token}' } },
+  operations: {
+    listProducts: { path: '/products', params: { q: { $state: '/query' } }, load: true, debounce: 300, select: '/items' },
+    addToCart: { method: 'POST', path: '/cart/{productId}' },
+  },
+};
+
+export const PRODUCTS_SPEC: ServerDrivenNestedSpec = {
+  state: { query: '', added: '' },
+  root: {
+    type: 'Column',
+    props: { gap: 12 },
+    children: [
+      { type: 'TextInput', props: { placeholder: 'Search products', value: { $bindState: '/query' } } },
+      {
+        type: 'Row',
+        visible: { $api: '/listProducts/loading' },
+        children: [{ type: 'Spinner' }, { type: 'Text', props: { variant: 'caption', text: 'Loading…' } }],
+      },
+      {
+        type: 'Text',
+        props: { color: 'error', text: { $api: '/listProducts/error' } },
+        visible: { $api: '/listProducts/error' },
+      },
+      {
+        type: 'Column',
+        props: { gap: 8 },
+        repeat: { apiPath: '/listProducts/data', key: 'id' },
+        children: [
+          {
+            type: 'Card',
+            props: { title: { $item: 'name' } },
+            children: [
+              {
+                type: 'Row',
+                props: { justify: 'between' },
+                children: [
+                  { type: 'Text', props: { className: 'price', text: { $template: '$${$item/price}' } } },
+                  {
+                    type: 'Button',
+                    props: { label: 'Add', variant: 'outline' },
+                    on: {
+                      press: {
+                        action: 'addToCart',
+                        params: { productId: { $item: 'id' }, qty: 1 },
+                        onSuccess: { action: 'setState', params: { statePath: '/added', value: { $event: 'name' } } },
+                        onError: { action: 'setState', params: { statePath: '/added', value: '' } },
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'Text',
+        props: { variant: 'caption', text: { $template: 'Added ${/added} to the cart' } },
+        visible: { $state: '/added' },
+      },
+    ],
+  },
+};
+
+/** A real public API — dummyjson.com — searched as you type, with a simulated add-to-cart POST. */
+export const DUMMYJSON_API: ServerDrivenApiSchema = {
+  baseUrl: 'https://dummyjson.com',
+  operations: {
+    searchProducts: {
+      path: '/products/search',
+      params: { q: { $state: '/query' }, limit: 5, select: 'title,price,thumbnail,rating' },
+      load: true,
+      debounce: 400,
+      select: '/products',
+    },
+    addToCart: { method: 'POST', path: '/carts/add' },
+  },
+};
+
+export const DUMMYJSON_SPEC: ServerDrivenNestedSpec = {
+  state: { query: 'phone', cart: null },
+  root: {
+    type: 'Column',
+    props: { gap: 12 },
+    children: [
+      { type: 'TextInput', props: { label: 'Search dummyjson.com', value: { $bindState: '/query' } } },
+      {
+        type: 'Row',
+        visible: { $api: '/searchProducts/loading' },
+        children: [{ type: 'Spinner' }, { type: 'Text', props: { variant: 'caption', text: 'Fetching…' } }],
+      },
+      { type: 'Text', props: { color: 'error', text: { $api: '/searchProducts/error' } }, visible: { $api: '/searchProducts/error' } },
+      {
+        type: 'Text',
+        props: { variant: 'caption', text: 'No matches.' },
+        visible: [{ $api: '/searchProducts/loading', not: true }, { $api: '/searchProducts/data', not: true }],
+      },
+      {
+        type: 'Column',
+        props: { gap: 0 },
+        repeat: { apiPath: '/searchProducts/data', key: 'id' },
+        children: [
+          {
+            type: 'ListItem',
+            props: {
+              title: { $item: 'title' },
+              subtitle: { $template: '★ ${$item/rating}' },
+              imageUrl: { $item: 'thumbnail' },
+              trailing: { $template: '$${$item/price}' },
+            },
+            on: {
+              press: {
+                action: 'addToCart',
+                params: { userId: 1, products: [{ id: { $item: 'id' }, quantity: 1 }] },
+                onSuccess: { action: 'setState', params: { statePath: '/cart', value: { $event: '' } } },
+              },
+            },
+          },
+        ],
+      },
+      {
+        type: 'Card',
+        props: { title: 'Cart (from POST /carts/add)' },
+        visible: { $state: '/cart' },
+        children: [
+          { type: 'Text', props: { text: { $template: '${/cart/totalProducts} item · total $${/cart/total}' } } },
+          { type: 'Text', props: { variant: 'caption', text: { $template: 'Added ${/cart/products/0/title}' } } },
+        ],
+      },
     ],
   },
 };

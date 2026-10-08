@@ -6,7 +6,7 @@ import { Pressable, Text, View } from 'react-native';
 import meta from '../meta';
 import { Readout } from '../readout';
 import { STORAGE_SEGMENTS, TEAM_MEMBERS } from '../../sample-data';
-import { GALLERY_SPEC, NESTED_SPEC, WIDGETS_SPEC } from '../serverdrivenview.specs';
+import { GALLERY_SPEC, NESTED_SPEC, TEAL_THEME, WIDGETS_SPEC } from '../serverdrivenview.specs';
 
 /** The component catalog a spec can draw from, and how to extend it. */
 export default { ...meta, title: 'UI Widgets/Server Driven View/Catalog' };
@@ -17,10 +17,16 @@ export const Gallery: Story = {
   args: { spec: GALLERY_SPEC },
 };
 
-/** `accentColor` restyles buttons, switches, checkboxes and progress at once. */
-export const AccentColor: Story = {
-  args: { spec: GALLERY_SPEC, accentColor: '#0E7C86' },
-  parameters: { source: '<ServerDrivenView spec={spec} accentColor="#0E7C86" />' },
+/** One style-spec JSON re-themes every component: colors, radii, type, part styles. */
+export const Themed: Story = {
+  args: { spec: GALLERY_SPEC, theme: TEAL_THEME },
+  parameters: { source: '<ServerDrivenView spec={spec} theme={Variables.appTheme.dataSet} />' },
+};
+
+/** `themeMode` picks a mode; the built-in `dark` mode works with no theme at all. */
+export const DarkMode: Story = {
+  args: { spec: GALLERY_SPEC, themeMode: 'dark', style: { padding: 16, borderRadius: 12 } },
+  parameters: { source: '<ServerDrivenView spec={spec} themeMode="dark" />' },
 };
 
 /** The nested tree form: children are elements, and bare strings render as Text. */
@@ -61,7 +67,7 @@ const Rating: ServerDrivenComponent = ({ props, bindings, emit, theme }) => {
             emit('change', star);
           }}
         >
-          <Text style={{ fontSize: 28, color: star <= value ? theme.accentColor : '#D1D5DB' }}>★</Text>
+          <Text style={{ fontSize: 28, color: star <= value ? theme.colors.primary : theme.colors.outline }}>★</Text>
         </Pressable>
       ))}
     </View>

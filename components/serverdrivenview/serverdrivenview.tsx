@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useMemo,
@@ -8,7 +9,16 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useColorScheme } from 'react-native';
+import {
+  buildRequest,
+  hasOperation,
+  normalizeApi,
+  sendRequest,
+  toFailure,
+  type ApiRequest,
+} from './serverdrivenview.api';
+import { createTheme, resolveThemeProps } from './serverdrivenview.theme';
 import { SERVER_DRIVEN_COMPONENTS } from './serverdrivenview.catalog';
 import {
   addWrite,
@@ -30,15 +40,13 @@ import {
 } from './serverdrivenview.engine';
 import type {
   ServerDrivenActionBinding,
+  ServerDrivenApiResult,
   ServerDrivenElement,
-  ServerDrivenTheme,
   ServerDrivenViewHandle,
   ServerDrivenViewProps,
 } from './serverdrivenview.props';
 
 export type * from './serverdrivenview.props';
-
-const DEFAULT_ACCENT = '#2563EB';
 
 /** Deepest element nesting rendered; guards a spec whose children loop. */
 const MAX_DEPTH = 64;
@@ -46,6 +54,19 @@ const MAX_DEPTH = 64;
 const NO_WRITES: StateWrite[] = [];
 
 type State = Record<string, unknown>;
+
+/** A stored operation result; `key` is the request it answers. */
+interface ApiEntry extends ServerDrivenApiResult {
+  key?: string;
+}
+
+function toBindings(value: unknown): ServerDrivenActionBinding[] {
+  const list = Array.isArray(value) ? value : value != null ? [value] : [];
+  return list.filter(
+    (binding): binding is ServerDrivenActionBinding =>
+      isPlainObject(binding) && typeof binding.action === 'string'
+  );
+}
 
 function stringify(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -66,12 +87,11 @@ function parseData(data: unknown): unknown {
 }
 
 function actionList(element: ServerDrivenElement, event: string): ServerDrivenActionBinding[] {
-  const bound = element.on?.[event];
-  const list = Array.isArray(bound) ? bound : bound != null ? [bound] : [];
-  return list.filter(
-    (binding): binding is ServerDrivenActionBinding =>
-      isPlainObject(binding) && typeof binding.action === 'string'
-  );
+  return toBindings(element.on?.[event]);
+}
+
+function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return value != null && typeof (value as PromiseLike<unknown>).then === 'function';
 }
 
 function isDev(): boolean {
@@ -87,9 +107,28 @@ function isDev(): boolean {
  */
 const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrivenViewProps>(
   function ServerDrivenView(
-    { spec, data, components, actions, accentColor = DEFAULT_ACCENT, onAction, onStateChange, style },
+    { spec, data, theme, themeMode = 'light', api, components, actions, onAction, onStateChange, style },
     ref
   ) {
+    const deviceScheme = useColorScheme();
+    const mode = themeMode === 'system' ? (deviceScheme === 'dark' ? 'dark' : 'light') : themeMode;
+    const themeKey = stringify(theme);
+    const resolvedTheme = useMemo(() => createTheme(themeKey, mode), [themeKey, mode]);
+
+    const apiKey = stringify(api);
+    const schema = useMemo(() => normalizeApi(apiKey), [apiKey]);
+    const [apiStore, setApiStore] = useState<Record<string, ApiEntry>>({});
+    // What `$api` reads, minus request keys. State seeds and `load` requests
+    // read this; rendering reads it with pending loads marked.
+    const apiData = useMemo(() => {
+      const out: Record<string, ServerDrivenApiResult> = {};
+      for (const name of Object.keys(schema?.operations ?? {})) {
+        const { key: _key, ...entry } = apiStore[name] ?? { loading: false };
+        out[name] = entry;
+      }
+      return out;
+    }, [schema, apiStore]);
+
     // A Studio page can hand over a freshly built spec object on every render;
     // keying on its content keeps the parse — and the user's edits — stable.
     const specKey = stringify(spec);
@@ -100,9 +139,9 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
     // replayed on top, so a variable that loads late still fills the fields
     // nobody has touched yet.
     const base = useMemo<State>(() => {
-      const seeded = resolveValue(normalized?.state ?? {}, { data: boundData, state: {} });
+      const seeded = resolveValue(normalized?.state ?? {}, { data: boundData, state: {}, api: apiData });
       return isPlainObject(seeded) ? seeded : {};
-    }, [normalized, boundData]);
+    }, [normalized, boundData, apiData]);
 
     // Edits belong to one spec; a new spec starts from its own seed.
     const [log, setLog] = useState<{ specKey: string; writes: StateWrite[] }>({ specKey, writes: NO_WRITES });
@@ -113,10 +152,97 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
     // one event each see the writes of the ones before them.
     const live = useRef({ specKey, base, writes, state });
     const handlers = useRef({ actions, onAction, onStateChange });
+    const apiRef = useRef({ schema, scope: { data: boundData, state, api: apiData } as Scope });
     useLayoutEffect(() => {
       live.current = { specKey, base, writes, state };
       handlers.current = { actions, onAction, onStateChange };
+      apiRef.current = { schema, scope: { data: boundData, state, api: apiData } };
     });
+
+    // One in-flight request per operation; a newer one aborts the older.
+    const inFlight = useRef<Record<string, AbortController>>({});
+    useEffect(() => {
+      const pending = inFlight.current;
+      return () => Object.values(pending).forEach((controller) => controller.abort());
+    }, []);
+
+    const send = useCallback((name: string, request: ApiRequest): Promise<unknown> => {
+      const operation = apiRef.current.schema?.operations[name];
+      if (operation == null) return Promise.reject({ message: `Unknown operation "${name}"` });
+      inFlight.current[name]?.abort();
+      const controller = new AbortController();
+      inFlight.current[name] = controller;
+      const update = (entry: Partial<ApiEntry>) =>
+        setApiStore((store) => ({ ...store, [name]: { ...store[name], ...entry } as ApiEntry }));
+      update({ loading: true, key: request.key });
+      return sendRequest(request, operation, controller.signal).then(
+        (result) => {
+          if (!controller.signal.aborted) update({ data: result, loading: false, error: undefined, status: 200 });
+          return result;
+        },
+        (error) => {
+          if (controller.signal.aborted) throw error;
+          const failure = toFailure(error);
+          update({ loading: false, error: failure.message, status: failure.status });
+          throw failure;
+        }
+      );
+    }, []);
+
+    const request = useCallback(
+      (name: string, params: Record<string, unknown>, scope?: Scope): Promise<unknown> => {
+        const { schema: current, scope: liveScope } = apiRef.current;
+        if (current == null || !hasOperation(current, name)) {
+          return Promise.reject({ message: `Unknown operation "${name}"` });
+        }
+        const built = buildRequest(current, name, params, scope ?? liveScope);
+        if (built == null) return Promise.reject({ message: `Missing path params for "${name}"` });
+        return send(name, built);
+      },
+      [send]
+    );
+
+    // `load` operations: built from the current data, state and results, and
+    // re-sent whenever the request they resolve to changes.
+    const loads = useMemo(() => {
+      const out: Record<string, ApiRequest> = {};
+      if (schema == null) return out;
+      const scope: Scope = { data: boundData, state, api: apiData };
+      for (const [name, operation] of Object.entries(schema.operations)) {
+        if (!isPlainObject(operation) || operation.load !== true) continue;
+        const built = buildRequest(schema, name, {}, scope);
+        if (built != null) out[name] = built;
+      }
+      return out;
+    }, [schema, boundData, state, apiData]);
+    const loadSignature = Object.entries(loads)
+      .map(([name, built]) => `${name}=${built.key}`)
+      .join('\n');
+    useEffect(() => {
+      const timers: ReturnType<typeof setTimeout>[] = [];
+      for (const [name, built] of Object.entries(loads)) {
+        if (apiStore[name]?.key === built.key) continue;
+        const run = () =>
+          send(name, built).catch(() => {
+            // The failure is in `$api/<name>/error`; nothing else listens.
+          });
+        // The first load goes out at once; later changes (typing) wait `debounce` ms.
+        const wait = Number(schema?.operations[name]?.debounce) || 0;
+        if (wait > 0 && apiStore[name] != null) timers.push(setTimeout(run, wait));
+        else run();
+      }
+      return () => timers.forEach(clearTimeout);
+      // Keyed on the signature: `loads` is a new object on every state change.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loadSignature]);
+
+    const apiView = useMemo(() => {
+      const out: Record<string, ServerDrivenApiResult> = { ...apiData };
+      for (const [name, built] of Object.entries(loads)) {
+        if (apiStore[name]?.key !== built.key) out[name] = { ...out[name], loading: true };
+      }
+      return out;
+    }, [apiData, loads, apiStore]);
 
     const write = useCallback((path: Path, value: unknown) => {
       const current = live.current;
@@ -141,12 +267,14 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
         getState: () => live.current.state,
         setState: (statePath: string, value: unknown) => write(parsePath(statePath), value),
         resetState: reset,
+        request: (operation: string, params?: Record<string, unknown>) => request(operation, params ?? {}),
       }),
-      [write, reset]
+      [write, reset, request]
     );
 
+    /** Runs one action; returns its result, or a promise of it. */
     const runAction = useCallback(
-      (name: string, params: Record<string, any>, scope: Scope, elementKey: string) => {
+      (name: string, params: Record<string, any>, scope: Scope, elementKey: string): unknown => {
         const path = parsePath(params.statePath ?? params.path);
         const list = () => {
           const value = getIn(live.current.state, path);
@@ -155,22 +283,18 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
 
         switch (name) {
           case 'setState':
-            write(path, params.value);
-            return;
+            return write(path, params.value);
           case 'pushState':
-            write(path, [...list(), params.value]);
-            return;
+            return write(path, [...list(), params.value]);
           case 'removeState': {
             const index = Number(params.index);
             if (Number.isInteger(index)) write(path, list().filter((_, i) => i !== index));
-            return;
+            return undefined;
           }
           case 'toggleState':
-            write(path, !isTruthy(getIn(live.current.state, path)));
-            return;
+            return write(path, !isTruthy(getIn(live.current.state, path)));
           case 'resetState':
-            reset();
-            return;
+            return reset();
         }
 
         const context = {
@@ -181,40 +305,51 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
           state: live.current.state,
         };
         const handler = handlers.current.actions?.[name];
-        if (handler == null) {
-          handlers.current.onAction?.({ action: name, params, ...context });
-          return;
+        if (handler != null) {
+          return handler(params, { ...context, setState: (statePath, value) => write(parsePath(statePath), value) });
         }
-        const warn = (error: unknown) => console.warn(`[ServerDrivenView] action "${name}" failed`, error);
-        try {
-          const result = handler(params, {
-            ...context,
-            setState: (statePath, value) => write(parsePath(statePath), value),
-          });
-          if (result != null && typeof result.then === 'function') result.catch(warn);
-        } catch (error) {
-          warn(error);
-        }
+        if (hasOperation(apiRef.current.schema, name)) return request(name, params, scope);
+        return handlers.current.onAction?.({ action: name, params, ...context });
       },
-      [write, reset]
+      [write, reset, request]
     );
 
     const dispatch = useCallback(
-      (element: ServerDrivenElement, elementKey: string, event: string, payload: unknown, scope: Scope) => {
-        for (const binding of actionList(element, event)) {
+      (bindings: ServerDrivenActionBinding[], elementKey: string, payload: unknown, scope: Scope) => {
+        for (const binding of bindings) {
           // Re-read state per action: an earlier one in the list may have written it.
-          const actionScope: Scope = { ...scope, state: live.current.state, event: payload };
+          const actionScope: Scope = { ...scope, state: live.current.state, api: apiRef.current.scope.api, event: payload };
           const params = isPlainObject(binding.params) ? resolveValue(binding.params, actionScope) : {};
-          runAction(binding.action, params, actionScope, elementKey);
+          const settle = (key: 'onSuccess' | 'onError', result: unknown) => {
+            const next = toBindings(binding[key]);
+            if (next.length > 0) dispatch(next, elementKey, result, scope);
+            else if (key === 'onError') console.warn(`[ServerDrivenView] action "${binding.action}" failed`, result);
+          };
+          let result: unknown;
+          try {
+            result = runAction(binding.action, params, actionScope, elementKey);
+          } catch (error) {
+            settle('onError', toFailure(error));
+            continue;
+          }
+          if (isThenable(result)) {
+            result.then(
+              (value) => settle('onSuccess', value),
+              (error) => {
+                if ((error as Error)?.name !== 'AbortError') settle('onError', toFailure(error));
+              }
+            );
+          } else {
+            settle('onSuccess', result);
+          }
         }
       },
       [runAction]
     );
 
     const registry = useMemo(() => ({ ...SERVER_DRIVEN_COMPONENTS, ...components }), [components]);
-    const theme = useMemo<ServerDrivenTheme>(() => ({ accentColor }), [accentColor]);
-
-    if (normalized == null) return <View style={style} />;
+    const rootStyle = [{ backgroundColor: resolvedTheme.colors.background }, style];
+    if (normalized == null) return <View style={rootStyle} />;
     const { root, elements } = normalized;
 
     const renderChildren = (keys: string[], scope: Scope, ancestors: string[]): ReactNode[] => {
@@ -244,7 +379,7 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
       }
 
       const rawProps = isPlainObject(element.props) ? element.props : {};
-      const props = resolveValue(rawProps, scope) as Record<string, any>;
+      const props = resolveThemeProps(resolvedTheme, resolveValue(rawProps, scope));
 
       const bindings: Record<string, (value: unknown) => void> = {};
       for (const [prop, raw] of Object.entries(rawProps)) {
@@ -279,18 +414,18 @@ const ServerDrivenViewComponent = forwardRef<ServerDrivenViewHandle, ServerDrive
           key={reactKey}
           props={props}
           bindings={bindings}
-          emit={(event, payload) => dispatch(element, key, event, payload, scope)}
+          emit={(event, payload) => dispatch(actionList(element, event), key, payload, scope)}
           handles={(event) => actionList(element, event).length > 0}
           element={element}
           elementKey={key}
-          theme={theme}
+          theme={resolvedTheme}
         >
           {children}
         </Component>
       );
     };
 
-    return <View style={style}>{renderElement(root, { data: boundData, state }, [], root)}</View>;
+    return <View style={rootStyle}>{renderElement(root, { data: boundData, state, api: apiView }, [], root)}</View>;
   }
 );
 

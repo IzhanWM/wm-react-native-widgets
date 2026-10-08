@@ -1,5 +1,5 @@
 {
-  "name": "WMUIServerDrivenView",
+  "name": "RNWServerDrivenView",
   "version": "1.1.0",
   "license": "MIT",
   "repository": {
@@ -42,13 +42,28 @@
       "isList": false,
       "isRequired": false
     },
-    "accentColor": {
-      "name": "accentColor",
-      "displayName": "Accent Color",
-      "description": "Primary color of the built-in buttons, switches, checkboxes, steppers and progress bars. Default: #2563EB",
+    "theme": {
+      "name": "theme",
+      "displayName": "Theme",
+      "description": "The style spec — one JSON for the whole look: colors, space, radii, fonts, typography, components (per-type part styles with variants), classes (applied with className) and modes. Merges over the defaults; values name entries by category. Example: {colors: {primary: '#0E7C86'}, components: {Button: {style: {borderRadius: 'pill'}}}, modes: {dark: {colors: {surface: '#111827'}}}}",
+      "type": "object",
+      "isList": false,
+      "isRequired": false
+    },
+    "themeMode": {
+      "name": "themeMode",
+      "displayName": "Theme Mode",
+      "description": "Which theme mode applies: light, dark, system (follows the device), or any mode the theme defines. Default: light",
       "type": "string",
-      "widget": "color",
-      "defaultValue": "#2563EB",
+      "defaultValue": "light",
+      "isList": false,
+      "isRequired": false
+    },
+    "api": {
+      "name": "api",
+      "displayName": "API",
+      "description": "The APIs the spec may call: {baseUrl, headers, operations: {name: {method, path, params, load, debounce, select}}}. Path placeholders {id} take params; the rest become query (GET) or JSON body. load: true fetches on mount and when the request changes. A spec calls an operation by name as an action and reads {$api: '/name/data'}, loading, error, status. Only listed operations are reachable.",
+      "type": "object",
       "isList": false,
       "isRequired": false
     }
@@ -57,7 +72,7 @@
     "onAction": {
       "name": "onAction",
       "displayName": "On Action",
-      "description": "Fires when an element runs a custom action, e.g. on: {press: {action: 'submitSweep', params: {...}}}. The event carries action, params (resolved), item and index (inside a repeat), elementKey and the local state. Switch on event.action and invoke only the variables you expect.",
+      "description": "Fires when an element runs a custom action, e.g. on: {press: {action: 'submitSweep', params: {...}}}. The event carries action, params (resolved), item and index (inside a repeat), elementKey and the local state. Switch on event.action and invoke only the variables you expect. Not fired for actions that match an API operation.",
       "type": "function",
       "params": [
         "event"

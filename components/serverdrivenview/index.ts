@@ -1,5 +1,6 @@
 export { ServerDrivenView } from './serverdrivenview';
 export { SERVER_DRIVEN_COMPONENTS } from './serverdrivenview.catalog';
+export { DEFAULT_STYLE_SPEC } from './serverdrivenview.theme';
 export type {
   ServerDrivenViewProps,
   ServerDrivenViewHandle,
@@ -17,4 +18,10 @@ export type {
   ServerDrivenComponent,
   ServerDrivenComponentProps,
   ServerDrivenTheme,
+  ServerDrivenStyle,
+  ServerDrivenStyleSpec,
+  ServerDrivenComponentStyles,
+  ServerDrivenApiSchema,
+  ServerDrivenApiOperation,
+  ServerDrivenApiResult,
 } from './serverdrivenview.props';

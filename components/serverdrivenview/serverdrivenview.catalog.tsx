@@ -21,10 +21,6 @@ import type {
   ServerDrivenComponentProps,
 } from './serverdrivenview.props';
 
-const INK = '#111827';
-const MUTED = '#6B7280';
-const LINE = '#E5E7EB';
-
 const ALIGN: Record<string, ViewStyle['alignItems']> = {
   start: 'flex-start',
   end: 'flex-end',
@@ -113,12 +109,14 @@ const View: ServerDrivenComponent = ({ props, children }) => (
   <RNView style={[boxStyle(props), props.style]}>{children}</RNView>
 );
 
-const Column: ServerDrivenComponent = ({ props, children }) => (
-  <RNView style={[{ gap: 8 }, boxStyle(props), props.style]}>{children}</RNView>
+const Column: ServerDrivenComponent = ({ props, children, theme }) => (
+  <RNView style={[theme.parts('Column', props.variant).style, boxStyle(props), props.style]}>{children}</RNView>
 );
 
-const Row: ServerDrivenComponent = ({ props, children }) => (
-  <RNView style={[styles.row, boxStyle(props), props.style]}>{children}</RNView>
+const Row: ServerDrivenComponent = ({ props, children, theme }) => (
+  <RNView style={[styles.row, theme.parts('Row', props.variant).style, boxStyle(props), props.style]}>
+    {children}
+  </RNView>
 );
 
 const ScrollView: ServerDrivenComponent = ({ props, children }) => (
@@ -141,15 +139,18 @@ const Pressable: ServerDrivenComponent = (componentProps) =>
   );
 
 const Card: ServerDrivenComponent = (componentProps) => {
-  const { props, children } = componentProps;
+  const { props, children, theme } = componentProps;
+  const parts = theme.parts('Card', props.variant);
   const content = (
     <>
-      {props.title != null && <RNText style={styles.cardTitle}>{str(props.title)}</RNText>}
-      {props.subtitle != null && <RNText style={styles.cardSubtitle}>{str(props.subtitle)}</RNText>}
+      {props.title != null && <RNText style={[parts.titleStyle, props.titleStyle]}>{str(props.title)}</RNText>}
+      {props.subtitle != null && (
+        <RNText style={[parts.subtitleStyle, props.subtitleStyle]}>{str(props.subtitle)}</RNText>
+      )}
       {children}
     </>
   );
-  return pressable(componentProps, [styles.card, boxStyle(props), props.style], content, props.title);
+  return pressable(componentProps, [parts.style, boxStyle(props), props.style], content, props.title);
 };
 
 const Spacer: ServerDrivenComponent = ({ props }) => {
@@ -157,11 +158,13 @@ const Spacer: ServerDrivenComponent = ({ props }) => {
   return <RNView style={size != null ? { width: size, height: size } : { flex: num(props.flex) ?? 1 }} />;
 };
 
-const Divider: ServerDrivenComponent = ({ props }) => (
+const Divider: ServerDrivenComponent = ({ props, theme }) => (
   <RNView
     style={[
       styles.divider,
-      { backgroundColor: str(props.color) || LINE, marginVertical: num(props.spacing) ?? 4 },
+      theme.parts('Divider', props.variant).style,
+      props.color != null && { backgroundColor: str(props.color) },
+      num(props.spacing) != null && { marginVertical: num(props.spacing) },
       props.style,
     ]}
   />
@@ -171,17 +174,8 @@ const Divider: ServerDrivenComponent = ({ props }) => (
 // Content
 // ---------------------------------------------------------------------------
 
-const TEXT_VARIANTS: Record<string, TextStyle> = {
-  heading: { fontSize: 24, fontWeight: '700', color: INK },
-  title: { fontSize: 18, fontWeight: '600', color: INK },
-  subtitle: { fontSize: 15, fontWeight: '500', color: '#4B5563' },
-  body: { fontSize: 15, color: INK },
-  caption: { fontSize: 12, color: MUTED },
-  label: { fontSize: 13, fontWeight: '600', color: '#374151' },
-};
-
-function textStyle(props: Record<string, any>, base: TextStyle): TextStyle {
-  const style: TextStyle = { ...base };
+function textStyle(props: Record<string, any>, ...base: (TextStyle | undefined)[]): TextStyle {
+  const style: TextStyle = Object.assign({}, ...base);
   if (props.color != null) style.color = str(props.color);
   const size = num(props.size);
   if (size != null) style.fontSize = size;
@@ -192,24 +186,31 @@ function textStyle(props: Record<string, any>, base: TextStyle): TextStyle {
   return style;
 }
 
-const Text: ServerDrivenComponent = ({ props, children }) => (
+/** `variant` picks a `typography` entry; `components.Text` applies on top. */
+const Text: ServerDrivenComponent = ({ props, children, theme }) => (
   <RNText
     numberOfLines={num(props.numberOfLines)}
-    style={[textStyle(props, TEXT_VARIANTS[props.variant] ?? TEXT_VARIANTS.body), props.style]}
+    style={[
+      textStyle(
+        props,
+        theme.typography[props.variant] ?? theme.typography.body,
+        theme.parts('Text', props.variant).style
+      ),
+      props.style,
+    ]}
   >
     {props.text != null ? str(props.text) : children}
   </RNText>
 );
 
-const HEADING_SIZES = [28, 22, 18];
-
-const Heading: ServerDrivenComponent = ({ props, children }) => {
+/** `level` 1–3 picks the `h1`–`h3` typography entry. */
+const Heading: ServerDrivenComponent = ({ props, children, theme }) => {
   const level = Math.min(Math.max(Math.round(num(props.level) ?? 1), 1), 3);
   return (
     <RNText
       accessibilityRole="header"
       style={[
-        textStyle(props, { fontSize: HEADING_SIZES[level - 1], fontWeight: '700', color: INK }),
+        textStyle(props, theme.typography[`h${level}`], theme.parts('Heading', props.variant).style),
         props.style,
       ]}
     >
@@ -236,33 +237,39 @@ const Image: ServerDrivenComponent = ({ props }) => {
   );
 };
 
-const Badge: ServerDrivenComponent = ({ props, theme }) => (
-  <RNView style={[styles.badge, { backgroundColor: str(props.color) || theme.accentColor }, props.style]}>
-    <RNText style={[styles.badgeText, { color: str(props.textColor) || '#FFFFFF' }]}>{str(props.text)}</RNText>
-  </RNView>
-);
+const Badge: ServerDrivenComponent = ({ props, theme }) => {
+  const parts = theme.parts('Badge', props.variant);
+  return (
+    <RNView style={[styles.badge, parts.style, props.color != null && { backgroundColor: str(props.color) }, props.style]}>
+      <RNText style={[parts.textStyle, props.textColor != null && { color: str(props.textColor) }, props.textStyle]}>
+        {str(props.text)}
+      </RNText>
+    </RNView>
+  );
+};
 
 const ListItem: ServerDrivenComponent = (componentProps) => {
-  const { props } = componentProps;
+  const { props, theme } = componentProps;
+  const parts = theme.parts('ListItem', props.variant);
   const imageUrl = str(props.imageUrl ?? props.image);
   const content = (
     <>
-      {imageUrl !== '' && <RNImage source={{ uri: imageUrl }} style={styles.listImage} />}
+      {imageUrl !== '' && <RNImage source={{ uri: imageUrl }} style={[parts.imageStyle, props.imageStyle]} />}
       <RNView style={styles.listBody}>
-        <RNText style={styles.listTitle} numberOfLines={1}>
+        <RNText style={[parts.titleStyle, props.titleStyle]} numberOfLines={1}>
           {str(props.title)}
         </RNText>
         {props.subtitle != null && (
-          <RNText style={styles.listSubtitle} numberOfLines={2}>
+          <RNText style={[parts.subtitleStyle, props.subtitleStyle]} numberOfLines={2}>
             {str(props.subtitle)}
           </RNText>
         )}
       </RNView>
-      {props.trailing != null && <RNText style={styles.listTrailing}>{str(props.trailing)}</RNText>}
-      {props.chevron === true && <RNText style={styles.chevron}>›</RNText>}
+      {props.trailing != null && <RNText style={[parts.trailingStyle, props.trailingStyle]}>{str(props.trailing)}</RNText>}
+      {props.chevron === true && <RNText style={parts.chevronStyle}>›</RNText>}
     </>
   );
-  return pressable(componentProps, [styles.listItem, props.style], content, str(props.title));
+  return pressable(componentProps, [styles.listItem, parts.style, props.style], content, str(props.title));
 };
 
 // ---------------------------------------------------------------------------
@@ -289,14 +296,18 @@ function useInputValue<T>(
   return [value, set];
 }
 
-const BUTTON_VARIANTS = ['primary', 'secondary', 'outline', 'ghost', 'danger'];
-
+/**
+ * `variant` picks `components.Button.variants[variant]` — `primary`,
+ * `secondary`, `outline`, `ghost`, `danger`, or any the theme adds. `color`
+ * fills a button that has a background, else tints its label and border.
+ */
 const Button: ServerDrivenComponent = ({ props, emit, theme }) => {
-  const variant = BUTTON_VARIANTS.includes(props.variant) ? props.variant : 'primary';
-  const color = variant === 'danger' ? '#DC2626' : str(props.color) || theme.accentColor;
-  const filled = variant === 'primary' || variant === 'danger';
+  const parts = theme.parts('Button', props.variant);
+  const base = parts.style ?? {};
+  const filled = base.backgroundColor != null && base.backgroundColor !== 'transparent';
+  const color = props.color != null ? str(props.color) : undefined;
+  const labelStyle: TextStyle = { ...parts.labelStyle, ...(color != null && !filled ? { color } : null), ...props.labelStyle };
   const disabled = props.disabled === true || props.loading === true;
-  const ink = filled ? '#FFFFFF' : variant === 'secondary' ? INK : color;
   return (
     <RNPressable
       accessibilityRole="button"
@@ -307,29 +318,29 @@ const Button: ServerDrivenComponent = ({ props, emit, theme }) => {
       onPress={() => emit('press')}
       style={({ pressed }) => [
         styles.button,
-        filled && { backgroundColor: color },
-        variant === 'secondary' && { backgroundColor: LINE },
-        variant === 'outline' && { borderWidth: 1, borderColor: color },
+        base,
+        color != null && (filled ? { backgroundColor: color } : base.borderWidth ? { borderColor: color } : null),
         props.fullWidth === true && { alignSelf: 'stretch' },
         (pressed || disabled) && styles.pressed,
         props.style,
       ]}
     >
       {props.loading === true ? (
-        <ActivityIndicator size="small" color={ink} />
+        <ActivityIndicator size="small" color={labelStyle.color as string} />
       ) : (
-        <RNText style={[styles.buttonText, { color: ink }]}>{str(props.label)}</RNText>
+        <RNText style={labelStyle}>{str(props.label)}</RNText>
       )}
     </RNPressable>
   );
 };
 
 const TextInput: ServerDrivenComponent = (componentProps) => {
-  const { props, emit } = componentProps;
+  const { props, emit, theme } = componentProps;
+  const parts = theme.parts('TextInput', props.variant);
   const [value, setValue] = useInputValue<string>(componentProps, 'value', '');
   return (
-    <RNView style={[styles.field, props.style]}>
-      {props.label != null && <RNText style={TEXT_VARIANTS.label}>{str(props.label)}</RNText>}
+    <RNView style={[parts.style, props.style]}>
+      {props.label != null && <RNText style={[parts.labelStyle, props.labelStyle]}>{str(props.label)}</RNText>}
       <RNTextInput
         value={str(value)}
         onChangeText={setValue}
@@ -337,7 +348,7 @@ const TextInput: ServerDrivenComponent = (componentProps) => {
         onFocus={() => emit('focus')}
         onBlur={() => emit('blur')}
         placeholder={props.placeholder != null ? str(props.placeholder) : undefined}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={parts.placeholderStyle?.color}
         secureTextEntry={props.secure === true}
         keyboardType={props.keyboardType}
         autoCapitalize={props.autoCapitalize}
@@ -345,7 +356,7 @@ const TextInput: ServerDrivenComponent = (componentProps) => {
         editable={props.disabled !== true}
         maxLength={num(props.maxLength)}
         accessibilityLabel={props.label != null ? str(props.label) : str(props.placeholder)}
-        style={[styles.input, props.multiline === true && styles.inputMultiline]}
+        style={[parts.inputStyle, props.multiline === true && styles.inputMultiline, props.inputStyle]}
       />
     </RNView>
   );
@@ -353,16 +364,17 @@ const TextInput: ServerDrivenComponent = (componentProps) => {
 
 const Switch: ServerDrivenComponent = (componentProps) => {
   const { props, theme } = componentProps;
+  const parts = theme.parts('Switch', props.variant);
   const [value, setValue] = useInputValue<boolean>(componentProps, 'value', false);
   return (
-    <RNView style={[styles.row, styles.toggleRow, props.style]}>
-      {props.label != null && <RNText style={[TEXT_VARIANTS.body, styles.grow]}>{str(props.label)}</RNText>}
+    <RNView style={[styles.row, styles.toggleRow, parts.style, props.style]}>
+      {props.label != null && <RNText style={[parts.labelStyle, styles.grow, props.labelStyle]}>{str(props.label)}</RNText>}
       <RNSwitch
         value={value === true}
         onValueChange={setValue}
         disabled={props.disabled === true}
-        trackColor={{ true: theme.accentColor, false: '#D1D5DB' }}
-        thumbColor="#FFFFFF"
+        trackColor={{ true: theme.colors.primary, false: theme.colors.outline }}
+        thumbColor={theme.colors.surface}
         accessibilityLabel={props.label != null ? str(props.label) : undefined}
       />
     </RNView>
@@ -371,6 +383,7 @@ const Switch: ServerDrivenComponent = (componentProps) => {
 
 const Checkbox: ServerDrivenComponent = (componentProps) => {
   const { props, theme } = componentProps;
+  const parts = theme.parts('Checkbox', props.variant);
   const [checked, setChecked] = useInputValue<boolean>(componentProps, 'checked', false);
   const on = checked === true;
   return (
@@ -381,15 +394,26 @@ const Checkbox: ServerDrivenComponent = (componentProps) => {
       accessibilityLabel={props.label != null ? str(props.label) : undefined}
       disabled={props.disabled === true}
       onPress={() => setChecked(!on)}
-      style={[styles.row, styles.toggleRow, props.style]}
+      style={[styles.row, styles.toggleRow, parts.style, props.style]}
     >
       <RNView
-        style={[styles.checkbox, { borderColor: on ? theme.accentColor : '#9CA3AF' }, on && { backgroundColor: theme.accentColor }]}
+        style={[
+          styles.checkbox,
+          parts.boxStyle,
+          on && { borderColor: theme.colors.primary, backgroundColor: theme.colors.primary },
+        ]}
       >
-        {on && <RNText style={styles.checkmark}>✓</RNText>}
+        {on && <RNText style={[styles.checkmark, { color: theme.colors.onPrimary }]}>✓</RNText>}
       </RNView>
       {props.label != null && (
-        <RNText style={[TEXT_VARIANTS.body, styles.grow, props.strikeWhenChecked === true && on && styles.struck]}>
+        <RNText
+          style={[
+            parts.labelStyle,
+            styles.grow,
+            props.labelStyle,
+            props.strikeWhenChecked === true && on && [styles.struck, { color: theme.colors.textMuted }],
+          ]}
+        >
           {str(props.label)}
         </RNText>
       )}
@@ -400,6 +424,7 @@ const Checkbox: ServerDrivenComponent = (componentProps) => {
 /** A +/− counter clamped to `min`..`max` — shelf counts, restock quantities. */
 const Stepper: ServerDrivenComponent = (componentProps) => {
   const { props, theme } = componentProps;
+  const parts = theme.parts('Stepper', props.variant);
   const [raw, setValue] = useInputValue<number>(componentProps, 'value', 0);
   const min = num(props.min) ?? 0;
   const max = num(props.max) ?? Number.POSITIVE_INFINITY;
@@ -417,17 +442,17 @@ const Stepper: ServerDrivenComponent = (componentProps) => {
         aria-disabled={off}
         disabled={off}
         onPress={() => nudge(delta)}
-        style={({ pressed }) => [styles.stepperButton, { borderColor: theme.accentColor }, (pressed || off) && styles.pressed]}
+        style={({ pressed }) => [styles.stepperButton, parts.buttonStyle, (pressed || off) && styles.pressed]}
       >
-        <RNText style={[styles.stepperSymbol, { color: theme.accentColor }]}>{symbol}</RNText>
+        <RNText style={[styles.stepperSymbol, parts.symbolStyle]}>{symbol}</RNText>
       </RNPressable>
     );
   };
   return (
-    <RNView style={[styles.row, props.style]}>
-      {props.label != null && <RNText style={[TEXT_VARIANTS.body, styles.grow]}>{label}</RNText>}
+    <RNView style={[styles.row, parts.style, props.style]}>
+      {props.label != null && <RNText style={[parts.labelStyle, styles.grow, props.labelStyle]}>{label}</RNText>}
       {control('−', -step, 'Decrease')}
-      <RNText style={styles.stepperValue} accessibilityLabel={`${label}: ${value}`}>
+      <RNText style={[styles.stepperValue, parts.valueStyle]} accessibilityLabel={`${label}: ${value}`}>
         {String(value)}
       </RNText>
       {control('+', step, 'Increase')}
@@ -440,20 +465,33 @@ const Stepper: ServerDrivenComponent = (componentProps) => {
 // ---------------------------------------------------------------------------
 
 const Spinner: ServerDrivenComponent = ({ props, theme }) => (
-  <ActivityIndicator size={props.size === 'large' ? 'large' : 'small'} color={str(props.color) || theme.accentColor} />
+  <ActivityIndicator size={props.size === 'large' ? 'large' : 'small'} color={str(props.color) || theme.colors.primary} />
 );
 
 const ProgressBar: ServerDrivenComponent = ({ props, theme }) => {
+  const parts = theme.parts('ProgressBar', props.variant);
   const max = num(props.max) ?? 1;
   const fraction = Math.min(Math.max((num(props.value) ?? 0) / (max > 0 ? max : 1), 0), 1);
-  const height = num(props.height) ?? 8;
+  const height = num(props.height);
   return (
     <RNView
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: Math.round(fraction * 100) }}
-      style={[{ height, borderRadius: height / 2, backgroundColor: str(props.trackColor) || LINE }, styles.track, props.style]}
+      style={[
+        parts.style,
+        height != null && { height, borderRadius: height / 2 },
+        props.trackColor != null && { backgroundColor: str(props.trackColor) },
+        styles.track,
+        props.style,
+      ]}
     >
-      <RNView style={{ width: `${fraction * 100}%`, height, backgroundColor: str(props.color) || theme.accentColor }} />
+      <RNView
+        style={[
+          { width: `${fraction * 100}%`, height: '100%' },
+          parts.fillStyle,
+          props.color != null && { backgroundColor: str(props.color) },
+        ]}
+      />
     </RNView>
   );
 };
@@ -504,72 +542,23 @@ export const SERVER_DRIVEN_COMPONENTS: Record<string, ServerDrivenComponent> = {
   SegmentProgress: SegmentProgressEntry,
 };
 
+// Structure only; everything visual comes from the theme.
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'center' },
   grow: { flex: 1 },
   pressed: { opacity: 0.6 },
-  card: {
-    padding: 16,
-    gap: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: LINE,
-    backgroundColor: '#FFFFFF',
-  },
-  cardTitle: { fontSize: 17, fontWeight: '600', color: INK },
-  cardSubtitle: { fontSize: 13, color: MUTED, marginTop: -4 },
   divider: { height: StyleSheet.hairlineWidth, alignSelf: 'stretch' },
-  badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
-  badgeText: { fontSize: 12, fontWeight: '600' },
-  listItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
-  listImage: { width: 40, height: 40, borderRadius: 20, backgroundColor: LINE },
+  badge: { alignSelf: 'flex-start' },
+  listItem: { flexDirection: 'row', alignItems: 'center' },
   listBody: { flex: 1, gap: 2 },
-  listTitle: { fontSize: 15, fontWeight: '500', color: INK },
-  listSubtitle: { fontSize: 13, color: MUTED },
-  listTrailing: { fontSize: 14, fontWeight: '600', color: INK },
-  chevron: { fontSize: 22, color: '#9CA3AF', marginLeft: -4 },
-  button: {
-    minHeight: 44,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
-  },
-  buttonText: { fontSize: 15, fontWeight: '600' },
-  field: { gap: 6 },
-  input: {
-    minHeight: 44,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 10,
-    fontSize: 15,
-    color: INK,
-    backgroundColor: '#FFFFFF',
-  },
+  button: { alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   inputMultiline: { minHeight: 88, textAlignVertical: 'top' },
   toggleRow: { minHeight: 36 },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepperButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepperSymbol: { fontSize: 18, fontWeight: '600', lineHeight: 20 },
-  stepperValue: { minWidth: 32, textAlign: 'center', fontSize: 16, fontWeight: '600', color: INK },
-  checkmark: { color: '#FFFFFF', fontSize: 14, fontWeight: '700', lineHeight: 16 },
-  struck: { textDecorationLine: 'line-through', color: MUTED },
+  checkbox: { alignItems: 'center', justifyContent: 'center' },
+  stepperButton: { alignItems: 'center', justifyContent: 'center' },
+  stepperSymbol: { lineHeight: 20 },
+  stepperValue: { textAlign: 'center' },
+  checkmark: { fontSize: 14, fontWeight: '700', lineHeight: 16 },
+  struck: { textDecorationLine: 'line-through' },
   track: { overflow: 'hidden', alignSelf: 'stretch' },
 });

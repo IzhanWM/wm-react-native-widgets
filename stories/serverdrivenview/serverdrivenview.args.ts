@@ -15,9 +15,19 @@ const serverDrivenViewOnlyArgTypes = {
     description:
       'Bound variables the spec reads with { "$data": "/path" }. Read-only from the spec; updates re-render live.',
   },
-  accentColor: {
-    control: 'color',
-    description: 'Primary color of the built-in components. Default: #2563EB',
+  theme: {
+    control: 'object',
+    description:
+      'The style spec: colors, space, radii, fonts, typography, per-component part styles with variants, classes and modes, merged over the defaults.',
+  },
+  themeMode: {
+    control: 'text',
+    description: 'Which theme mode applies: light, dark, system, or any mode the theme defines. Default: light',
+  },
+  api: {
+    control: 'object',
+    description:
+      'The API schema: baseUrl, headers and named operations. A spec calls an operation by its name as an action and reads results with { "$api": "/name/data" }.',
   },
   components: {
     control: false,

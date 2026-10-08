@@ -7,6 +7,7 @@ import type { CommonWidgetProps } from '../widget-props/common';
  * sees it:
  *
  * - `{ "$data": "/user/name" }` — reads the bound `data` prop (Studio variables)
+ * - `{ "$api": "/listOrders/data" }` — an API operation's result (`data`, `loading`, `error`, `status`)
  * - `{ "$state": "/form/email" }` — reads local UI state
  * - `{ "$bindState": "/form/email" }` — reads local state and lets the
  *   component write it back (inputs, switches, checkboxes)
@@ -40,11 +41,20 @@ export interface ServerDrivenActionBinding {
    * Built-in (`setState`, `pushState`, `removeState`, `toggleState`,
    * `resetState`) or custom. Custom actions reach a handler in `actions`, or
    * else the `onAction` event — which is how a Studio page invokes a service
-   * variable or navigates.
+   * variable or navigates. A name listed in the `api` schema's operations
+   * sends that request.
    */
   action: string;
   /** Parameters, resolved against the element's scope and the event payload. */
   params?: Record<string, ServerDrivenValue>;
+  /**
+   * Run once the action settles: after an API response, or after a handler's
+   * returned promise resolves (right away for anything synchronous). `$event`
+   * is the result.
+   */
+  onSuccess?: ServerDrivenActionBinding | ServerDrivenActionBinding[];
+  /** Run when the action fails; `$event` is `{ message, status, data }`. */
+  onError?: ServerDrivenActionBinding | ServerDrivenActionBinding[];
 }
 
 /** An element in the flat `elements` map. */
@@ -65,7 +75,7 @@ export interface ServerDrivenElement {
    * repeat row (aisle → products); any of them may be a Studio variable
    * wrapper or a JSON string. `key` names the field used as the React key.
    */
-  repeat?: { statePath?: string; dataPath?: string; itemPath?: string; key?: string };
+  repeat?: { statePath?: string; dataPath?: string; apiPath?: string; itemPath?: string; key?: string };
 }
 
 /**
@@ -102,10 +112,116 @@ export interface ServerDrivenNestedSpec {
   state?: Record<string, ServerDrivenValue>;
 }
 
-/** Shared look applied by the built-in components. */
+/**
+ * A React Native style whose values may name theme entries: a color key
+ * (`color`, `*Color`) takes a `colors` name, a spacing key (`padding*`,
+ * `margin*`, `gap`) a `space` name, a `*Radius` key a `radii` name,
+ * `fontFamily` a `fonts` name. `"16px"` reads as `16`.
+ */
+export type ServerDrivenStyle = Record<string, unknown>;
+
+/** Styles for one component type: `style` is its root, `*Style` its parts. */
+export interface ServerDrivenComponentStyles {
+  style?: ServerDrivenStyle;
+  /** Overrides picked by the element's `variant` prop. */
+  variants?: Record<string, Omit<ServerDrivenComponentStyles, 'variants'>>;
+  [part: `${string}Style`]: ServerDrivenStyle | undefined;
+}
+
+/**
+ * The style spec — one JSON that themes everything a spec renders. Every
+ * section is optional and merges over the built-in defaults.
+ *
+ * ```json
+ * {
+ *   "colors": { "brand": "#0E7C86", "primary": "brand", "surface": "#F8FAFC" },
+ *   "radii": { "md": 14 },
+ *   "typography": { "title": { "fontSize": 20, "fontWeight": "700" } },
+ *   "components": { "Button": { "style": { "borderRadius": "pill" } } },
+ *   "classes": { "price": { "fontSize": 18, "fontWeight": "700", "color": "primary" } },
+ *   "modes": { "dark": { "colors": { "surface": "#111827" } } }
+ * }
+ * ```
+ */
+export interface ServerDrivenStyleSpec {
+  /** Named colors; a value may name another color. */
+  colors?: Record<string, string>;
+  /** Named spacing, in pixels. */
+  space?: Record<string, number | string>;
+  /** Named corner radii, in pixels. */
+  radii?: Record<string, number | string>;
+  /** Named font families — fonts the app has loaded. */
+  fonts?: Record<string, string>;
+  /** Text styles: `Text` variants and `h1`–`h3` for `Heading` levels. */
+  typography?: Record<string, ServerDrivenStyle>;
+  /** Styles per component type, applied to every element of that type. */
+  components?: Record<string, ServerDrivenComponentStyles>;
+  /** Named styles an element applies with `className`. */
+  classes?: Record<string, ServerDrivenStyle>;
+  /** Overrides applied when `themeMode` names them, e.g. `dark`. */
+  modes?: Record<string, Omit<ServerDrivenStyleSpec, 'modes'>>;
+}
+
+/** The resolved theme a catalog component receives. */
 export interface ServerDrivenTheme {
-  /** Primary color: buttons, switches, checkboxes, progress. */
-  accentColor: string;
+  /** The active mode. */
+  mode: string;
+  colors: Record<string, string>;
+  space: Record<string, number>;
+  radii: Record<string, number>;
+  fonts: Record<string, string>;
+  typography: Record<string, Record<string, any>>;
+  classes: Record<string, Record<string, any>>;
+  /**
+   * Resolved part styles for a component type and variant, e.g.
+   * `parts('Button', 'outline').labelStyle`. Works for host components too.
+   */
+  parts: (type: string, variant?: unknown) => Record<string, Record<string, any>>;
+  /** Resolves theme names inside a style. */
+  resolveStyle: (style: unknown) => Record<string, any>;
+}
+
+/** An operation in the API schema. */
+export interface ServerDrivenApiOperation {
+  /** @default 'GET' */
+  method?: string;
+  /** Appended to `baseUrl` (or an absolute URL). `{name}` placeholders take params. */
+  path: ServerDrivenValue;
+  /** Default params, under the caller's; may be expressions. */
+  params?: Record<string, ServerDrivenValue>;
+  /** Extra headers; may be expressions. */
+  headers?: Record<string, ServerDrivenValue>;
+  /** Fetch on mount, and again whenever the resolved request changes. */
+  load?: boolean;
+  /**
+   * With `load`, waits this many ms after the request last changed before
+   * refetching — e.g. a search box. The first load is never delayed.
+   * @default 0
+   */
+  debounce?: number;
+  /** Part of the response kept as `data`, e.g. `/content`. */
+  select?: string;
+}
+
+/**
+ * The APIs a spec may call:
+ * `{ "baseUrl": "https://api.example.com", "headers": {…}, "operations": { "listOrders": { "path": "/orders", "load": true } } }`.
+ */
+export interface ServerDrivenApiSchema {
+  /** May be an expression, e.g. `{ "$data": "/env/apiUrl" }`. */
+  baseUrl?: ServerDrivenValue;
+  /** Sent with every operation, e.g. `{ "Authorization": { "$template": "Bearer ${$data/token}" } }`. */
+  headers?: Record<string, ServerDrivenValue>;
+  operations: Record<string, ServerDrivenApiOperation>;
+}
+
+/** What `{ "$api": "/<operation>" }` reads. */
+export interface ServerDrivenApiResult {
+  data?: unknown;
+  loading: boolean;
+  /** Message of the last failure, cleared by a success. */
+  error?: string;
+  status?: number;
 }
 
 /** What a catalog component receives. */
@@ -156,7 +272,7 @@ export interface ServerDrivenActionContext {
 export type ServerDrivenActionHandler = (
   params: Record<string, unknown>,
   context: ServerDrivenActionContext
-) => void | Promise<void>;
+) => unknown;
 
 /** Emitted for a custom action that no handler in `actions` claimed. */
 export interface ServerDrivenActionEvent {
@@ -194,6 +310,8 @@ export interface ServerDrivenViewHandle {
   setState: (statePath: string, value: unknown) => void;
   /** Drops every local edit, re-seeding state from the spec and `data`. */
   resetState: () => void;
+  /** Runs an API operation; resolves with its data. */
+  request: (operation: string, params?: Record<string, unknown>) => Promise<unknown>;
 }
 
 /**
@@ -223,12 +341,26 @@ export interface ServerDrivenViewProps extends CommonWidgetProps {
   /** Handlers for custom actions, by name. Unhandled ones fire `onAction`. */
   actions?: Record<string, ServerDrivenActionHandler>;
   /**
-   * Primary color of the built-in components.
-   * @default '#2563EB'
+   * The style spec ({@link ServerDrivenStyleSpec}), or it as a JSON string —
+   * colors, spacing, typography, component and class styles, modes.
    */
-  accentColor?: string;
-  /** Called for a custom action with no handler in `actions`. */
-  onAction?: (event: ServerDrivenActionEvent) => void;
+  theme?: ServerDrivenStyleSpec | string | null;
+  /**
+   * Which `modes` entry of the theme applies: `light`, `dark`, `system`
+   * (follows the device) or any mode the theme defines.
+   * @default 'light'
+   */
+  themeMode?: string;
+  /**
+   * The APIs the spec may call ({@link ServerDrivenApiSchema}), or it as a
+   * JSON string. Only listed operations can be reached.
+   */
+  api?: ServerDrivenApiSchema | string | null;
+  /**
+   * Called for a custom action with no handler in `actions` and no API
+   * operation. Returning a promise defers the binding's `onSuccess`/`onError`.
+   */
+  onAction?: (event: ServerDrivenActionEvent) => unknown;
   /** Called after every write to local state. */
   onStateChange?: (event: ServerDrivenStateChangeEvent) => void;
 }

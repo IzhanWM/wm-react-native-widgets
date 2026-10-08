@@ -19,6 +19,7 @@ price-tag check to Electronics, and a size-run check to Apparel
 | `serverdrivenview.engine.ts` | React-free: spec normalization, paths, expressions, conditions, repeat |
 | `serverdrivenview.catalog.tsx` | Built-in components (`SERVER_DRIVEN_COMPONENTS`) |
 | `serverdrivenview.tsx` | Renderer: state, actions, recursion, `ref` handle |
+| `serverdrivenview.theme.ts`, `.api.ts` | `theme` and `api` props — see [06](./06-server-driven-view-theme-and-api.md) |
 
 One implementation on every platform; no peers beyond the root package's.
 
