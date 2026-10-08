@@ -1,6 +1,6 @@
 {
-  "name": "WMUISkiaEffect",
-  "version": "1.0.0",
+  "name": "RNWSkiaEffect",
+  "version": "1.0.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "description": "Per-pixel canvas for blend modes and blur that vector drawing cannot reach. On iOS and Android it paints through Skia. Skia on web needs the CanvasKit WASM bundle loaded by the host app, which not every host does, so web renders the same composition with CSS filter and mix-blend-mode instead and pulls in no WASM.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "@shopify/react-native-skia": "2.6.2"
   },
   "keywords": [
@@ -101,7 +101,7 @@
     }
   },
   "group": "ui-widgets/skiaeffect",
-  "marketplace_unsupported": {
+  "marketplace": {
     "carouselImages": [
       "/assets/images/screen-blend.png",
       "/assets/images/sunset-blur.png",

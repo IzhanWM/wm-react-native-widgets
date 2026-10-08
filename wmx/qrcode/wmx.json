@@ -1,6 +1,6 @@
 {
-  "name": "WMUIQrCode",
-  "version": "1.0.0",
+  "name": "RNWQrCode",
+  "version": "1.0.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "description": "Generates a QR code from any string, with an optional centered logo. Drawn as vectors, so it stays crisp at any size and renders identically on iOS, Android and web.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "react-native-svg": "15.12.1"
   },
   "keywords": [

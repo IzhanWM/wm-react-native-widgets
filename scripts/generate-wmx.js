@@ -8,6 +8,9 @@ const wmxDir = path.join(root, 'wmx');
 
 const defaultWmxDir = path.join(root, 'dist', 'wmx', 'widgets');
 
+/** The library every widget wraps; WMX packages must depend on its published version. */
+const libraryPkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+
 /** Optional directory to receive copies of generated zip files (--o= or positional). */
 const parseZipCopyDestDir = () => {
   const argv = process.argv.slice(2);
@@ -93,11 +96,32 @@ const splitFlatWmxSource = (raw) => {
   return { packageJSON, wmxJSON };
 };
 
+/**
+ * Pins the library dependency to the version in the root package.json. A hand-written pin
+ * drifts after a release, and Studio's codegen then fails to install it (ETARGET) and every
+ * `@wavemaker/react-native-widgets/<widget>` import breaks.
+ */
+const pinLibraryVersion = (packageJSON, wmxJsonPath) => {
+  const deps = packageJSON.dependencies;
+  if (!deps || deps[libraryPkg.name] === undefined) return;
+  if (deps[libraryPkg.name] !== libraryPkg.version) {
+    log(
+      'WARN %s pins %s@%s; using %s from package.json',
+      path.relative(root, wmxJsonPath),
+      libraryPkg.name,
+      deps[libraryPkg.name],
+      libraryPkg.version
+    );
+  }
+  deps[libraryPkg.name] = libraryPkg.version;
+};
+
 const generateWMXZip = (wmxJsonPath, destBaseDir) => {
   log('Reading %s', wmxJsonPath);
   const wmxSrcDir = path.dirname(wmxJsonPath);
   const raw = JSON.parse(fs.readFileSync(wmxJsonPath, 'utf8'));
   let { packageJSON, wmxJSON } = splitFlatWmxSource(raw);
+  pinLibraryVersion(packageJSON, wmxJsonPath);
   const pkgOutDir = path.join(destBaseDir, packageJSON.name);
   fs.mkdirSync(pkgOutDir, { recursive: true });
   fs.writeFileSync(path.join(pkgOutDir, 'package.json'), JSON.stringify(packageJSON, null, 2));

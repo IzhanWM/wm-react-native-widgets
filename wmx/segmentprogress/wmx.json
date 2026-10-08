@@ -1,6 +1,6 @@
 {
-  "name": "WMUISegmentProgress",
-  "version": "1.0.0",
+  "name": "RNWSegmentProgress",
+  "version": "1.0.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "description": "Multi-segment progress bar where every segment keeps its own rounded caps. Stacked views cannot produce per-segment caps, so the bar is drawn as vectors and renders identically on iOS, Android and web.",
   "iconUrl": "icon.svg",
   "dependencies": {
-    "@wavemaker/react-native-widgets": "1.0.0",
+    "@wavemaker/react-native-widgets": "1.0.1",
     "react-native-svg": "15.12.1"
   },
   "keywords": [
